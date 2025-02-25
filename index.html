@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic GitHub Folder Links</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .link-button {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+
+    .link-button:hover {
+      background-color: #555;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .loader {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Dynamic GitHub Folder Links</h1>
+  <div id="loader" class="loader">Loading...</div>
+  <div id="links-container"></div>
+</div>
+
+<script>
+// Function to fetch the list of files/folders from the GitHub repository using the GitHub API
+async function fetchGitHubContents() {
+  const url = "https://api.github.com/repos/Runarok/ArbitraryWorks/contents/Files";
+  const response = await fetch(url);
+  const data = await response.json();
+
+  if (Array.isArray(data)) {
+    document.getElementById('loader').style.display = 'none'; // Hide the loading text
+    const linksContainer = document.getElementById('links-container');
+    
+    data.forEach(item => {
+      if (item.type === 'dir') {
+        // Create a link for each folder leading to the specific HTML file in the folder
+        const link = document.createElement('a');
+        const folderName = item.name;
+        const htmlFileLink = `https://github.com/Runarok/ArbitraryWorks/blob/main/Files/${encodeURIComponent(folderName)}/${encodeURIComponent(folderName)}.html`;
+        link.href = htmlFileLink;
+        link.target = '_blank';  // Open in a new tab
+        link.className = 'link-button'; // Apply the link button style
+        link.innerText = `${folderName}`;
+        linksContainer.appendChild(link);
+      }
+    });
+  }
+}
+
+// Fetch the GitHub contents when the page loads
+fetchGitHubContents();
+</script>
+
+</body>
+</html>
