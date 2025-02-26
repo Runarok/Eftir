@@ -78,8 +78,8 @@
 
         <div class="result-container">
             <h2>Results:</h2>
-            <div id="encrypted" class="result-item"></div>
-            <div id="decrypted" class="result-item"></div>
+            <div id="decrypted" class="result-item"></div> <!-- Changed ID -->
+            <div id="encrypted" class="result-item"></div> <!-- Changed ID -->
         </div>
     </div>
 
@@ -118,7 +118,7 @@
             let encrypted = '';
             let decrypted = '';
 
-            // Encrypt the text
+            // Encrypt the text using the cipher alphabet
             for (let i = 0; i < text.length; i++) {
                 let char = text[i];
                 if (alphabet.includes(char)) {
@@ -128,7 +128,7 @@
                 }
             }
 
-            // Decrypt the text
+            // Decrypt the text using the original alphabet
             for (let i = 0; i < text.length; i++) {
                 let char = text[i];
                 if (alphabet.includes(char)) {
@@ -138,9 +138,9 @@
                 }
             }
 
-            // Show results
-            document.getElementById('encrypted').textContent = `Encrypted: ${encrypted}`;
-            document.getElementById('decrypted').textContent = `Decrypted: ${decrypted}`;
+            // Swap encrypted and decrypted labels
+            document.getElementById('decrypted').textContent = `Encrypted: ${decrypted}`;  // Changed the label to "Encrypted"
+            document.getElementById('encrypted').textContent = `Decrypted: ${encrypted}`;  // Changed the label to "Decrypted"
         }
     </script>
 </body>
