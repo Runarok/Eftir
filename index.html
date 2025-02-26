@@ -69,12 +69,12 @@ async function fetchGitHubContents() {
     
     data.forEach(item => {
       if (item.type === 'dir') {
-        // Create a link for each folder leading to the specific HTML file in the folder
+        // Create a link for each folder leading to the GitHub Pages site
         const link = document.createElement('a');
         const folderName = item.name;
-        const htmlFileLink = `https://github.com/Runarok/ArbitraryWorks/blob/main/Files/${encodeURIComponent(folderName)}/${encodeURIComponent(folderName)}.html`;
+        const htmlFileLink = `https://runarok.github.io/ArbitraryWorks/Files/${encodeURIComponent(folderName)}/${encodeURIComponent(folderName)}.html`;
         link.href = htmlFileLink;
-        link.target = '_blank';  // Open in a new tab
+        link.target = '_self';  // Open in the same tab
         link.className = 'link-button'; // Apply the link button style
         link.innerText = `${folderName}`;
         linksContainer.appendChild(link);
