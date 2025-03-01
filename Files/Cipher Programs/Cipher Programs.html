@@ -18,10 +18,12 @@
             justify-content: center;
             height: 100vh;
         }
+        
         h1 {
             color: #bb86fc;
             text-align: center;
         }
+        
         .container {
             max-width: 800px;
             padding: 20px;
@@ -31,18 +33,22 @@
             box-sizing: border-box;
             width: 100%;
         }
+        
         .cipher-category {
             margin-top: 30px;
         }
+        
         .category-title {
             font-size: 1.5rem;
             color: #bb86fc;
             margin-bottom: 15px;
         }
+        
         .cipher-list {
             list-style-type: none;
             padding: 0;
         }
+        
         .cipher-item {
             background-color: #333;
             padding: 15px;
@@ -51,18 +57,53 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            position: relative;
         }
+        
         .cipher-item a {
             color: #03dac6;
             text-decoration: none;
         }
+        
         .cipher-item a:hover {
             text-decoration: underline;
         }
+        
         .description {
             color: #bbb;
             font-size: 1rem;
             margin-right: 10px;
+            flex-grow: 1;
+            max-width: calc(100% - 80px); /* Ensures the description won't go past the button */
+            white-space: normal; /* Allows the description to wrap if needed */
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            position: absolute;
+            right: 15px; /* Adjust to create space from the edge */
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .try-button {
+            background-color: #6200ea;
+            color: #f5f5f5;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+            display: inline-block;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        
+        .try-button:hover {
+            background-color: #3700b3;
         }
     </style>
 </head>
@@ -84,8 +125,8 @@
     </div>
 
     <script>
-        // Load the cipher configuration from the JSON file
-        fetch('cipherConfig.json')
+        // Load the cipher configuration from the JSON file hosted on GitHub
+        fetch('https://raw.githubusercontent.com/Runarok/ArbitraryWorks/refs/heads/main/Files/Cipher%20Programs/cipherConfig.json')
             .then(response => response.json())
             .then(data => {
                 const streamCipherList = document.getElementById('streamCipherList');
@@ -98,14 +139,19 @@
                     
                     const description = document.createElement('span');
                     description.classList.add('description');
-                    description.textContent = cipher.description;
+                    description.textContent = `${cipher.name}: ${cipher.description}`;
+                    
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.classList.add('button-container');
                     
                     const link = document.createElement('a');
                     link.href = cipher.link;
-                    link.textContent = `Try ${cipher.name}`;
-
+                    link.classList.add('try-button');
+                    link.textContent = "Try";
+                    
+                    buttonContainer.appendChild(link);
                     listItem.appendChild(description);
-                    listItem.appendChild(link);
+                    listItem.appendChild(buttonContainer);
                     streamCipherList.appendChild(listItem);
                 });
 
@@ -116,14 +162,19 @@
                     
                     const description = document.createElement('span');
                     description.classList.add('description');
-                    description.textContent = cipher.description;
+                    description.textContent = `${cipher.name}: ${cipher.description}`;
+                    
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.classList.add('button-container');
                     
                     const link = document.createElement('a');
                     link.href = cipher.link;
-                    link.textContent = `Try ${cipher.name}`;
-
+                    link.classList.add('try-button');
+                    link.textContent = "Try";
+                    
+                    buttonContainer.appendChild(link);
                     listItem.appendChild(description);
-                    listItem.appendChild(link);
+                    listItem.appendChild(buttonContainer);
                     blockCipherList.appendChild(listItem);
                 });
             })
