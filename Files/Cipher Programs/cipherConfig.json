@@ -1,0 +1,26 @@
+{
+    "streamCiphers": [
+        {
+            "name": "Caesar Cipher",
+            "description": "A substitution cipher where each letter in the text is shifted by a certain number of places.",
+            "link": "caesar-cipher.html"
+        },
+        {
+            "name": "Monoalphabetic Cipher",
+            "description": "A substitution cipher where each letter of the plaintext is replaced by another letter.",
+            "link": "monoalphabetic-cipher.html"
+        },
+        {
+            "name": "Vigenère Cipher",
+            "description": "A method of encrypting alphabetic text using a simple form of polyalphabetic substitution.",
+            "link": "vigenere-cipher.html"
+        }
+    ],
+    "blockCiphers": [
+        {
+            "name": "Block Cipher",
+            "description": "A symmetric key cipher that encrypts data in fixed-size blocks, typically 64 or 128 bits.",
+            "link": "block-cipher.html"
+        }
+    ]
+}
