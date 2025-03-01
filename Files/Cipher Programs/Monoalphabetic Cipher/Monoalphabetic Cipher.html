@@ -58,6 +58,7 @@
         }
         .result-container {
             margin-top: 20px;
+            display: none; /* Initially hide the result container */
         }
         .result-item {
             margin-bottom: 10px;
@@ -76,10 +77,10 @@
 
         <button onclick="monoAlphabeticCipher()">Encrypt/Decrypt</button>
 
-        <div class="result-container">
+        <div class="result-container" id="result-container">
             <h2>Results:</h2>
-            <div id="decrypted" class="result-item"></div> <!-- Changed ID -->
-            <div id="encrypted" class="result-item"></div> <!-- Changed ID -->
+            <div id="encrypted" class="result-item"></div> <!-- Encrypted text label -->
+            <div id="decrypted" class="result-item"></div> <!-- Decrypted text label -->
         </div>
     </div>
 
@@ -118,29 +119,32 @@
             let encrypted = '';
             let decrypted = '';
 
-            // Encrypt the text using the cipher alphabet
+            // Now encrypt the text by mapping the original alphabet to the cipher alphabet
             for (let i = 0; i < text.length; i++) {
                 let char = text[i];
                 if (alphabet.includes(char)) {
-                    encrypted += cipherAlphabet[alphabet.indexOf(char)];
+                    encrypted += alphabet[cipherAlphabet.indexOf(char)];  // Encrypt using the cipher alphabet
                 } else {
                     encrypted += char;
                 }
             }
 
-            // Decrypt the text using the original alphabet
+            // Now decrypt the text by mapping the cipher alphabet back to the original alphabet
             for (let i = 0; i < text.length; i++) {
                 let char = text[i];
                 if (alphabet.includes(char)) {
-                    decrypted += alphabet[cipherAlphabet.indexOf(char)];
+                    decrypted += cipherAlphabet[alphabet.indexOf(char)];  // Decrypt using the original alphabet
                 } else {
                     decrypted += char;
                 }
             }
 
-            // Swap encrypted and decrypted labels
-            document.getElementById('decrypted').textContent = `Encrypted: ${decrypted}`;  // Changed the label to "Encrypted"
-            document.getElementById('encrypted').textContent = `Decrypted: ${encrypted}`;  // Changed the label to "Decrypted"
+            // Directly set the text content for encrypted and decrypted results
+            document.getElementById('encrypted').textContent = `Encrypted: ${encrypted}`;  // Encrypted text label
+            document.getElementById('decrypted').textContent = `Decrypted: ${decrypted}`;  // Decrypted text label
+
+            // Show the result container
+            document.getElementById('result-container').style.display = 'block';
         }
     </script>
 </body>
