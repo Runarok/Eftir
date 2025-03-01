@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ciphers - Home</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #f5f5f5;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            color: #bb86fc;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            padding: 20px;
+            background-color: #1f1f1f;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .cipher-category {
+            margin-top: 30px;
+        }
+        .category-title {
+            font-size: 1.5rem;
+            color: #bb86fc;
+            margin-bottom: 15px;
+        }
+        .cipher-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .cipher-item {
+            background-color: #333;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cipher-item a {
+            color: #03dac6;
+            text-decoration: none;
+        }
+        .cipher-item a:hover {
+            text-decoration: underline;
+        }
+        .description {
+            color: #bbb;
+            font-size: 1rem;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ciphers</h1>
+        
+        <!-- Stream Ciphers Section -->
+        <div class="cipher-category" id="streamCiphers">
+            <h2 class="category-title">Stream Ciphers</h2>
+            <ul id="streamCipherList" class="cipher-list"></ul>
+        </div>
+        
+        <!-- Block Ciphers Section -->
+        <div class="cipher-category" id="blockCiphers">
+            <h2 class="category-title">Block Ciphers</h2>
+            <ul id="blockCipherList" class="cipher-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Load the cipher configuration from the JSON file
+        fetch('cipherConfig.json')
+            .then(response => response.json())
+            .then(data => {
+                const streamCipherList = document.getElementById('streamCipherList');
+                const blockCipherList = document.getElementById('blockCipherList');
+                
+                // Add stream ciphers to the Stream Ciphers section
+                data.streamCiphers.forEach(cipher => {
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('cipher-item');
+                    
+                    const description = document.createElement('span');
+                    description.classList.add('description');
+                    description.textContent = cipher.description;
+                    
+                    const link = document.createElement('a');
+                    link.href = cipher.link;
+                    link.textContent = `Try ${cipher.name}`;
+
+                    listItem.appendChild(description);
+                    listItem.appendChild(link);
+                    streamCipherList.appendChild(listItem);
+                });
+
+                // Add block ciphers to the Block Ciphers section
+                data.blockCiphers.forEach(cipher => {
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('cipher-item');
+                    
+                    const description = document.createElement('span');
+                    description.classList.add('description');
+                    description.textContent = cipher.description;
+                    
+                    const link = document.createElement('a');
+                    link.href = cipher.link;
+                    link.textContent = `Try ${cipher.name}`;
+
+                    listItem.appendChild(description);
+                    listItem.appendChild(link);
+                    blockCipherList.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                console.error("Error loading JSON file: ", error);
+            });
+    </script>
+</body>
+</html>
