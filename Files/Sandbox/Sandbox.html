@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sandbox</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #f5f5f5;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #bb86fc;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            padding: 20px;
+            background-color: #1f1f1f;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .sandbox-category {
+            margin-top: 30px;
+        }
+
+        .category-title {
+            font-size: 1.5rem;
+            color: #bb86fc;
+            margin-bottom: 15px;
+        }
+
+        .sandbox-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sandbox-item {
+            background-color: #333;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .sandbox-item a {
+            color: #03dac6;
+            text-decoration: none;
+        }
+
+        .sandbox-item a:hover {
+            text-decoration: underline;
+        }
+
+        .description {
+            color: #bbb;
+            font-size: 1rem;
+            margin-right: 10px;
+            flex-grow: 1;
+            max-width: calc(100% - 80px);
+            white-space: normal;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .try-button {
+            background-color: #6200ea;
+            color: #f5f5f5;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+            display: inline-block;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+
+        .try-button:hover {
+            background-color: #3700b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sandbox Programs</h1>
+    <div class="container" id="container"></div>
+
+    <script>
+        // Data for the sandbox prototypes
+        const sandboxData = [
+            {
+                category: 'Sandbox Prototypes',
+                items: [
+                    {
+                        name: 'Prototype1',
+                        description: 'Basic function implemented',
+                        link: 'https://runarok.github.io/ArbitraryWorks/Files/Sandbox/Prototype1.html'
+                    },
+                    {
+                        name: 'Prototype2',
+                        description: 'Colors added',
+                        link: 'https://runarok.github.io/ArbitraryWorks/Files/Sandbox/Prototype1.html'
+                    }
+                ]
+            }
+        ];
+
+        // Get the container div
+        const container = document.getElementById('container');
+
+        // Function to create a sandbox category
+        function createSandboxCategory(categoryData) {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.classList.add('sandbox-category');
+
+            const categoryTitle = document.createElement('div');
+            categoryTitle.classList.add('category-title');
+            categoryTitle.textContent = categoryData.category;
+            categoryDiv.appendChild(categoryTitle);
+
+            const sandboxList = document.createElement('ul');
+            sandboxList.classList.add('sandbox-list');
+
+            categoryData.items.forEach(item => {
+                const sandboxItem = document.createElement('li');
+                sandboxItem.classList.add('sandbox-item');
+                
+                const description = document.createElement('div');
+                description.classList.add('description');
+                description.textContent = `${item.name}: ${item.description}`;
+                
+                const buttonContainer = document.createElement('div');
+                buttonContainer.classList.add('button-container');
+
+                const tryButton = document.createElement('a');
+                tryButton.href = item.link;
+                tryButton.classList.add('try-button');
+                tryButton.textContent = 'Try';
+                
+                buttonContainer.appendChild(tryButton);
+                sandboxItem.appendChild(description);
+                sandboxItem.appendChild(buttonContainer);
+                sandboxList.appendChild(sandboxItem);
+            });
+
+            categoryDiv.appendChild(sandboxList);
+            return categoryDiv;
+        }
+
+        // Create the entire body content dynamically
+        sandboxData.forEach(categoryData => {
+            const categoryDiv = createSandboxCategory(categoryData);
+            container.appendChild(categoryDiv);
+        });
+    </script>
+</body>
+</html>
