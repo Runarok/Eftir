@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ciphers - Home</title>
+    <title>Ciphers</title>
     <style>
         body {
             background-color: #121212;
@@ -18,12 +18,12 @@
             justify-content: center;
             height: 100vh;
         }
-        
+
         h1 {
             color: #bb86fc;
             text-align: center;
         }
-        
+
         .container {
             max-width: 800px;
             padding: 20px;
@@ -33,22 +33,22 @@
             box-sizing: border-box;
             width: 100%;
         }
-        
+
         .cipher-category {
             margin-top: 30px;
         }
-        
+
         .category-title {
             font-size: 1.5rem;
             color: #bb86fc;
             margin-bottom: 15px;
         }
-        
+
         .cipher-list {
             list-style-type: none;
             padding: 0;
         }
-        
+
         .cipher-item {
             background-color: #333;
             padding: 15px;
@@ -60,34 +60,34 @@
             flex-wrap: wrap;
             position: relative;
         }
-        
+
         .cipher-item a {
             color: #03dac6;
             text-decoration: none;
         }
-        
+
         .cipher-item a:hover {
             text-decoration: underline;
         }
-        
+
         .description {
             color: #bbb;
             font-size: 1rem;
             margin-right: 10px;
             flex-grow: 1;
-            max-width: calc(100% - 80px); /* Ensures the description won't go past the button */
-            white-space: normal; /* Allows the description to wrap if needed */
+            max-width: calc(100% - 80px);
+            white-space: normal;
         }
-        
+
         .button-container {
             display: flex;
             justify-content: flex-end;
             position: absolute;
-            right: 15px; /* Adjust to create space from the edge */
+            right: 15px;
             top: 50%;
             transform: translateY(-50%);
         }
-        
+
         .try-button {
             background-color: #6200ea;
             color: #f5f5f5;
@@ -101,99 +101,84 @@
             transition: background-color 0.3s;
             text-decoration: none;
         }
-        
+
         .try-button:hover {
             background-color: #3700b3;
         }
     </style>
 </head>
 <body>
+    <h1>Cipher Programs</h1>
     <div class="container">
-        <h1>Ciphers</h1>
-        
-        <!-- Stream Ciphers Section -->
-        <div class="cipher-category" id="streamCiphers">
-            <h2 class="category-title">Stream Ciphers</h2>
-            <ul id="streamCipherList" class="cipher-list"></ul>
+        <div id="streamCiphers" class="cipher-category">
+            <div class="category-title">Stream Ciphers</div>
+            <ul class="cipher-list" id="streamCipherList">
+                <!-- Stream ciphers will be dynamically inserted here -->
+            </ul>
         </div>
-        
-        <!-- Block Ciphers Section -->
-        <div class="cipher-category" id="blockCiphers">
-            <h2 class="category-title">Block Ciphers</h2>
-            <ul id="blockCipherList" class="cipher-list"></ul>
+
+        <div id="blockCiphers" class="cipher-category">
+            <div class="category-title">Block Ciphers</div>
+            <ul class="cipher-list" id="blockCipherList">
+                <!-- Block ciphers will be dynamically inserted here -->
+            </ul>
         </div>
     </div>
 
     <script>
-        // Load the cipher configuration from the JSON file hosted on GitHub
-    fetch('https://raw.githubusercontent.com/Runarok/ArbitraryWorks/refs/heads/main/Files/Cipher%20Programs/cipherConfig.json')
-        .then(response => response.json())
-        .then(data => {
-            const streamCipherList = document.getElementById('streamCipherList');
-            const blockCipherList = document.getElementById('blockCipherList');
-            
-            // Add stream ciphers to the Stream Ciphers section
-            data.streamCiphers.forEach(cipher => {
-                const listItem = document.createElement('li');
-                listItem.classList.add('cipher-item');
-                
-                const description = document.createElement('span');
-                description.classList.add('description');
-                description.textContent = `${cipher.name}: ${cipher.description}`;
-                
-                const buttonContainer = document.createElement('div');
-                buttonContainer.classList.add('button-container');
-                
-                // Modify the link format here
-                const formattedLink = cipher.link.replace(
-                    /([a-zA-Z0-9\-]+)-cipher\.html/,
-                    (match, p1) => `Files/Cipher%20Programs/${p1.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}/${p1.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}.html`
-                );
-                
-                const link = document.createElement('a');
-                link.href = formattedLink;
-                link.classList.add('try-button');
-                link.textContent = "Try";
-                
-                buttonContainer.appendChild(link);
-                listItem.appendChild(description);
-                listItem.appendChild(buttonContainer);
-                streamCipherList.appendChild(listItem);
-            });
-    
-            // Add block ciphers to the Block Ciphers section
-            data.blockCiphers.forEach(cipher => {
-                const listItem = document.createElement('li');
-                listItem.classList.add('cipher-item');
-                
-                const description = document.createElement('span');
-                description.classList.add('description');
-                description.textContent = `${cipher.name}: ${cipher.description}`;
-                
-                const buttonContainer = document.createElement('div');
-                buttonContainer.classList.add('button-container');
-                
-                // Modify the link format here as well
-                const formattedLink = cipher.link.replace(
-                    /([a-zA-Z0-9\-]+)-cipher\.html/,
-                    (match, p1) => `Files/Cipher%20Programs/${p1.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}/${p1.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}.html`
-                );
-                
-                const link = document.createElement('a');
-                link.href = formattedLink;
-                link.classList.add('try-button');
-                link.textContent = "Try";
-                
-                buttonContainer.appendChild(link);
-                listItem.appendChild(description);
-                listItem.appendChild(buttonContainer);
-                blockCipherList.appendChild(listItem);
-            });
-        })
-        .catch(error => {
-            console.error("Error loading JSON file: ", error);
-        });
+        // Fetching the JSON data from the provided URL
+        fetch('https://raw.githubusercontent.com/Runarok/ArbitraryWorks/refs/heads/main/Files/Cipher%20Programs/cipherConfig.json')
+            .then(response => response.json())
+            .then(data => {
+                // Stream Ciphers
+                const streamCipherList = document.getElementById('streamCipherList');
+                data.streamCiphers.forEach(cipher => {
+                    const cipherItem = document.createElement('li');
+                    cipherItem.classList.add('cipher-item');
 
+                    const description = document.createElement('div');
+                    description.classList.add('description');
+                    description.textContent = cipher.description;
+
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.classList.add('button-container');
+
+                    const tryButton = document.createElement('a');
+                    tryButton.classList.add('try-button');
+                    tryButton.href = `./${cipher.link}`;
+                    tryButton.textContent = 'Try';
+
+                    buttonContainer.appendChild(tryButton);
+                    cipherItem.appendChild(description);
+                    cipherItem.appendChild(buttonContainer);
+                    streamCipherList.appendChild(cipherItem);
+                });
+
+                // Block Ciphers
+                const blockCipherList = document.getElementById('blockCipherList');
+                data.blockCiphers.forEach(cipher => {
+                    const cipherItem = document.createElement('li');
+                    cipherItem.classList.add('cipher-item');
+
+                    const description = document.createElement('div');
+                    description.classList.add('description');
+                    description.textContent = cipher.description;
+
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.classList.add('button-container');
+
+                    const tryButton = document.createElement('a');
+                    tryButton.classList.add('try-button');
+                    tryButton.href = `./${cipher.link}`;
+                    tryButton.textContent = 'Try';
+
+                    buttonContainer.appendChild(tryButton);
+                    cipherItem.appendChild(description);
+                    cipherItem.appendChild(buttonContainer);
+                    blockCipherList.appendChild(cipherItem);
+                });
+            })
+            .catch(error => console.error('Error fetching cipher data:', error));
     </script>
 </body>
 </html>
