@@ -109,76 +109,85 @@
 </head>
 <body>
     <h1>Cipher Programs</h1>
-    <div class="container">
-        <div id="streamCiphers" class="cipher-category">
-            <div class="category-title">Stream Ciphers</div>
-            <ul class="cipher-list" id="streamCipherList">
-                <!-- Stream ciphers will be dynamically inserted here -->
-            </ul>
-        </div>
-
-        <div id="blockCiphers" class="cipher-category">
-            <div class="category-title">Block Ciphers</div>
-            <ul class="cipher-list" id="blockCipherList">
-                <!-- Block ciphers will be dynamically inserted here -->
-            </ul>
-        </div>
-    </div>
+    <div class="container" id="container"></div>
 
     <script>
-        // Fetching the JSON data from the provided URL
-        fetch('https://raw.githubusercontent.com/Runarok/ArbitraryWorks/refs/heads/main/Files/Cipher%20Programs/cipherConfig.json')
-            .then(response => response.json())
-            .then(data => {
-                // Stream Ciphers
-                const streamCipherList = document.getElementById('streamCipherList');
-                data.streamCiphers.forEach(cipher => {
-                    const cipherItem = document.createElement('li');
-                    cipherItem.classList.add('cipher-item');
+        // Data for the ciphers
+        const ciphersData = [
+            {
+                category: 'Stream Ciphers',
+                items: [
+                    {
+                        name: 'Caesar Cipher',
+                        description: 'A simple substitution cipher where each letter in the plaintext is shifted by a fixed number of positions.',
+                        link: 'https://runarok.github.io/ArbitraryWorks/Files/Cipher%20Programs/Caesar%20Cipher/Caesar%20Cipher.html'
+                    }
+                ]
+            },
+            {
+                category: 'Block Ciphers',
+                items: [
+                    {
+                        name: 'Monoalphabetic Cipher',
+                        description: 'A cipher in which each letter in the plaintext is replaced with another letter from a fixed substitution alphabet.',
+                        link: 'https://runarok.github.io/ArbitraryWorks/Files/Cipher%20Programs/Monoalphabetic%20Cipher/Monoalphabetic%20Cipher.html'
+                    },
+                    {
+                        name: 'Vigenère Cipher',
+                        description: 'A method of encrypting alphabetic text using a simple form of polyalphabetic substitution.',
+                        link: 'https://runarok.github.io/ArbitraryWorks/Files/Cipher%20Programs/Vigenère%20Cipher/Vigenère%20Cipher.html'
+                    }
+                ]
+            }
+        ];
 
-                    const description = document.createElement('div');
-                    description.classList.add('description');
-                    description.textContent = cipher.description;
+        // Get the container div
+        const container = document.getElementById('container');
 
-                    const buttonContainer = document.createElement('div');
-                    buttonContainer.classList.add('button-container');
+        // Function to create a cipher category
+        function createCipherCategory(categoryData) {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.classList.add('cipher-category');
 
-                    const tryButton = document.createElement('a');
-                    tryButton.classList.add('try-button');
-                    tryButton.href = `./${cipher.link}`;
-                    tryButton.textContent = 'Try';
+            const categoryTitle = document.createElement('div');
+            categoryTitle.classList.add('category-title');
+            categoryTitle.textContent = categoryData.category;
+            categoryDiv.appendChild(categoryTitle);
 
-                    buttonContainer.appendChild(tryButton);
-                    cipherItem.appendChild(description);
-                    cipherItem.appendChild(buttonContainer);
-                    streamCipherList.appendChild(cipherItem);
-                });
+            const cipherList = document.createElement('ul');
+            cipherList.classList.add('cipher-list');
 
-                // Block Ciphers
-                const blockCipherList = document.getElementById('blockCipherList');
-                data.blockCiphers.forEach(cipher => {
-                    const cipherItem = document.createElement('li');
-                    cipherItem.classList.add('cipher-item');
+            categoryData.items.forEach(item => {
+                const cipherItem = document.createElement('li');
+                cipherItem.classList.add('cipher-item');
+                
+                const description = document.createElement('div');
+                description.classList.add('description');
+                description.textContent = `${item.name}: ${item.description}`;
+                
+                const buttonContainer = document.createElement('div');
+                buttonContainer.classList.add('button-container');
 
-                    const description = document.createElement('div');
-                    description.classList.add('description');
-                    description.textContent = cipher.description;
+                const tryButton = document.createElement('a');
+                tryButton.href = item.link;
+                tryButton.classList.add('try-button');
+                tryButton.textContent = 'Try';
+                
+                buttonContainer.appendChild(tryButton);
+                cipherItem.appendChild(description);
+                cipherItem.appendChild(buttonContainer);
+                cipherList.appendChild(cipherItem);
+            });
 
-                    const buttonContainer = document.createElement('div');
-                    buttonContainer.classList.add('button-container');
+            categoryDiv.appendChild(cipherList);
+            return categoryDiv;
+        }
 
-                    const tryButton = document.createElement('a');
-                    tryButton.classList.add('try-button');
-                    tryButton.href = `./${cipher.link}`;
-                    tryButton.textContent = 'Try';
-
-                    buttonContainer.appendChild(tryButton);
-                    cipherItem.appendChild(description);
-                    cipherItem.appendChild(buttonContainer);
-                    blockCipherList.appendChild(cipherItem);
-                });
-            })
-            .catch(error => console.error('Error fetching cipher data:', error));
+        // Create the entire body content dynamically
+        ciphersData.forEach(categoryData => {
+            const categoryDiv = createCipherCategory(categoryData);
+            container.appendChild(categoryDiv);
+        });
     </script>
 </body>
 </html>
