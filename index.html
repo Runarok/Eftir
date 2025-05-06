@@ -60,7 +60,7 @@
 <script>
 // Function to fetch the list of files/folders from the GitHub repository using the GitHub API
 async function fetchGitHubContents() {
-  const url = "https://api.github.com/repos/Runarok/ArbitraryWorks/contents/Files";
+  const url = "https://api.github.com/repos/Runarok/Eftir/contents/Files";
   const response = await fetch(url);
   const data = await response.json();
 
@@ -73,7 +73,7 @@ async function fetchGitHubContents() {
         // Create a link for each folder leading to the GitHub Pages site
         const link = document.createElement('a');
         const folderName = item.name;
-        const htmlFileLink = `https://runarok.github.io/ArbitraryWorks/Files/${encodeURIComponent(folderName)}/${encodeURIComponent(folderName)}.html`;
+        const htmlFileLink = `https://runarok.github.io/Eftir/Files/${encodeURIComponent(folderName)}/${encodeURIComponent(folderName)}.html`;
         link.href = htmlFileLink;
         link.target = '_self';  // Open in the same tab
         link.className = 'link-button'; // Apply the link button style
