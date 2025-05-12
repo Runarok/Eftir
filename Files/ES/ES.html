@@ -166,8 +166,25 @@ SUM     DCD     0                 ; Reserve memory for sum
                 `
             },
             { 
-                title: "Adding and multiple 2 byte", 
+                title: "Simple Adding and multiple 2 byte", 
                 code: `
+AREA    SumExample, CODE, READONLY
+        EXPORT  _main
+
+_main
+        MOV     R0, #10
+        MOV     R1, #0
+
+LOOP    ADD     R1, R1, R0
+        SUBS    R0, #1
+        BNE     LOOP
+
+STOP    B       STOP
+
+        END
+
+---        
+                
     AREA AddExample, CODE, READONLY          ; Define a code section for addition example
     EXPORT __main                            ; Make __main function available for external linking
 
@@ -198,7 +215,25 @@ sum     DCD     0                            ; Define a variable "sum" initializ
 
     END                                      ; End of the MultiplyExample section
     
-                `
+---
+
+AREA    FACTORIAL, CODE, READONLY
+        EXPORT  _main
+
+_main
+        MOV     R0, #5
+        MOV     R1, R0
+FACT    SUBS    R1, R1, #1
+        CMP     R1, #1
+        BEQ     STOP
+        MUL     R3, R0, R1
+        MOV     R0, R3
+        BNE     FACT
+STOP    NOP
+HERE    B       HERE
+        END
+        
+`
             },
             { 
                 title: "Ones and Zeroes", 
@@ -254,21 +289,53 @@ ZEROCOUNT DCD   0                      ; Memory location for zeros count
                 `
             },
             { 
-                title: "Telegram", 
+                title: "LARGEST", 
                 code: `
+AREA    LARGEST, CODE, READONLY
+        EXPORT  _main
 
+_main
+        MOV     R5, #6
+        LDR     R1, =ARRAY
+        LDR     R2, [R1], #4
+LOOP    LDR     R4, [R1], #4
+        CMP     R2, R4
+        BHI     LOOP1
+        MOV     R2, R4
+LOOP1   SUBS    R5, R5, #1
+        CMP     R5, #0
+        BNE     LOOP
+        LDR     R4, =LARGENUMBER
+        STR     R2, [R4]
+
+ARRAY   DCD     0x44444444, 0xBCDBFFFF, 0x33333333, 0xAAAAAAA, 0x88888888, 0x99999999, 0x11111111
+        AREA    DATA, DATA, READWRITE
+LARGENUMBER DCD     0x0
+        END
                 `
             },
             { 
-                title: "Telegram", 
+                title: "LUT", 
                 code: `
+AREA    LUT, CODE, READONLY
+        EXPORT  _main
 
-                `
-            },
-            { 
-                title: "Telegram", 
-                code: `
+_main
+        LDR     R0, =TABLE
+        LDR     R1, =10
+        SUB     R1, R1, #1
+        MOV     R1, R1, LSL #0x02
+        ADD     R0, R0, R1
+        LDR     R2, [R0]
+        LDR     R3, =SQR
+        STR     R2, [R3]
+STOP    B       STOP
 
+        AREA    TABLEDATA, DATA, READONLY
+TABLE   DCD     01, 04, 09, 16, 25, 036, 049, 064, 081, 100
+        AREA    RESULT, DATA, READWRITE
+SQR     DCD     0x0
+        END
                 `
             }
         ];
