@@ -8,12 +8,18 @@ document.head.appendChild(scriptDOM);
 
 // Wait for React to load
 window.addEventListener('load', () => {
-  const rootElement = document.getElementById('root');
-  const root = ReactDOM.createRoot(rootElement);
+  // Load App component
+  const scriptApp = document.createElement('script');
+  scriptApp.src = './App.js';
+  scriptApp.onload = () => {
+    const rootElement = document.getElementById('root');
+    const root = ReactDOM.createRoot(rootElement);
 
-  root.render(
-    React.createElement(React.StrictMode, null,
-      React.createElement(window.App, null)
-    )
-  );
+    root.render(
+      React.createElement(React.StrictMode, null,
+        React.createElement(window.App, null)
+      )
+    );
+  };
+  document.head.appendChild(scriptApp);
 });

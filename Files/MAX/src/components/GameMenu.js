@@ -1,114 +1,56 @@
-// Load Lucide icons dynamically
-const loadLucideIcons = () => {
-  return new Promise((resolve) => {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/lucide-react@latest/dist/index.umd.js';
-    script.onload = () => {
-      window.Play = LucideReact.Play;
-      window.RotateCcw = LucideReact.RotateCcw;
-      window.Sun = LucideReact.Sun;
-      window.Moon = LucideReact.Moon;
-      window.Info = LucideReact.Info;
-      window.X = LucideReact.X;
-      resolve();
-    };
-    document.head.appendChild(script);
-  });
-};
+// Load Lucide icons
+const scriptLucide = document.createElement('script');
+scriptLucide.src = 'https://cdn.jsdelivr.net/npm/lucide-react@latest/dist/index.umd.js';
+document.head.appendChild(scriptLucide);
 
-// Load game store and context
-const loadGameStore = () => {
-  return new Promise((resolve) => {
-    const script = document.createElement('script');
-    script.src = '../store/gameStore.js';
-    script.onload = () => {
-      window.useGameStore = window.gameStore.useGameStore;
-      resolve();
-    };
-    document.head.appendChild(script);
-  });
-};
+// Define GameMenu component
+window.GameMenu = function({
+  onStartGame,
+  onRestart,
+  echoes,
+  level
+}) {
+  const { theme, toggleTheme } = window.useTheme();
+  const { 
+    isMenuOpen, 
+    bestScore, 
+    currentScore, 
+    gameMode, 
+    setGameMode,
+    timeRemaining 
+  } = window.useGameStore();
+  
+  const [showInfo, setShowInfo] = React.useState(false);
 
-const loadThemeContext = () => {
-  return new Promise((resolve) => {
-    const script = document.createElement('script');
-    script.src = '../context/ThemeContext.js';
-    script.onload = () => {
-      window.useTheme = window.ThemeContext.useTheme;
-      resolve();
-    };
-    document.head.appendChild(script);
-  });
-};
+  if (!isMenuOpen) return null;
 
-// Load game types
-const loadGameTypes = () => {
-  return new Promise((resolve) => {
-    const script = document.createElement('script');
-    script.src = '../types/game.js';
-    script.onload = () => {
-      window.GameMode = window.gameTypes.GameMode;
-      resolve();
-    };
-    document.head.appendChild(script);
-  });
-};
-
-// Initialize dependencies
-Promise.all([
-  loadLucideIcons(),
-  loadGameStore(),
-  loadThemeContext(),
-  loadGameTypes()
-]).then(() => {
-  // Now we can safely use the components
-  window.GameMenu = function({
-    onStartGame,
-    onRestart,
-    echoes,
-    level
-  }) {
-    const { theme, toggleTheme } = window.useTheme();
-    const { 
-      isMenuOpen, 
-      bestScore, 
-      currentScore, 
-      gameMode, 
-      setGameMode,
-      timeRemaining 
-    } = window.useGameStore();
-    
-    const [showInfo, setShowInfo] = React.useState(false);
-
-    if (!isMenuOpen) return null;
-
-    const gameModes = [
-      { 
-        mode: window.GameMode.CLASSIC, 
-        label: 'Classic Mode',
-        description: 'Limited echoes, collect all orbs, reach the exit'
-      },
-      { 
-        mode: window.GameMode.TIME_ATTACK, 
-        label: 'Time Attack',
-        description: 'Race against time to complete levels'
-      },
-      { 
-        mode: window.GameMode.SURVIVAL, 
-        label: 'Survival Mode',
-        description: 'More collectibles, fewer echoes, stay alive'
-      },
-      { 
-        mode: window.GameMode.PUZZLE, 
-        label: 'Puzzle Mode',
-        description: 'Complex mazes with limited echoes'
-      },
-      { 
-        mode: window.GameMode.EASY, 
-        label: 'Easy Mode',
-        description: 'Unlimited echoes for casual play'
-      }
-    ];
+  const gameModes = [
+    { 
+      mode: window.GameMode.CLASSIC, 
+      label: 'Classic Mode',
+      description: 'Limited echoes, collect all orbs, reach the exit'
+    },
+    { 
+      mode: window.GameMode.TIME_ATTACK, 
+      label: 'Time Attack',
+      description: 'Race against time to complete levels'
+    },
+    { 
+      mode: window.GameMode.SURVIVAL, 
+      label: 'Survival Mode',
+      description: 'More collectibles, fewer echoes, stay alive'
+    },
+    { 
+      mode: window.GameMode.PUZZLE, 
+      label: 'Puzzle Mode',
+      description: 'Complex mazes with limited echoes'
+    },
+    { 
+      mode: window.GameMode.EASY, 
+      label: 'Easy Mode',
+      description: 'Unlimited echoes for casual play'
+    }
+  ];
 
     return React.createElement("div", {
       className: "fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-md z-50"
