@@ -7,9 +7,9 @@ import GameMenu from './GameMenu';
 import ThemeToggle from './ThemeToggle';
 import { Moon, Sun } from 'lucide-react';
 
-const Game: React.FC = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [gameEngine, setGameEngine] = useState<GameEngine | null>(null);
+function Game() {
+  const canvasRef = useRef(null);
+  const [gameEngine, setGameEngine] = useState(null);
   const [echoes, setEchoes] = useState(5);
   const [level, setLevel] = useState(1);
   const [collected, setCollected] = useState(0);
@@ -28,7 +28,7 @@ const Game: React.FC = () => {
   }, [gameEngine, setMenuOpen, setPaused]);
 
   useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
+    const handleKeyPress = (e) => {
       if (e.key === 'Escape') {
         setMenuOpen(!isMenuOpen);
         setPaused(!isMenuOpen);
@@ -52,11 +52,11 @@ const Game: React.FC = () => {
     const canvas = canvasRef.current;
     const engine = new GameEngine(canvas, theme);
     
-    engine.onEchoUsed = (remaining: number) => {
+    engine.onEchoUsed = (remaining) => {
       setEchoes(remaining);
     };
     
-    engine.onCollectibleFound = (found: number, total: number) => {
+    engine.onCollectibleFound = (found, total) => {
       setCollected(found);
       setTotalCollectibles(total);
       setCurrentScore(found * 100 + level * 500);
@@ -73,7 +73,6 @@ const Game: React.FC = () => {
     
     setGameEngine(engine);
     
-    // Set initial values
     setEchoes(engine.maxEchoes);
     setTotalCollectibles(engine.totalCollectibles);
     
@@ -191,6 +190,6 @@ const Game: React.FC = () => {
       />
     </div>
   );
-};
+}
 
 export default Game;

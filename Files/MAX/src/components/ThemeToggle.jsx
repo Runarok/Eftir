@@ -1,11 +1,7 @@
 import React from 'react';
 import { useTheme } from '../context/ThemeContext';
 
-interface ThemeToggleProps {
-  icon: React.ReactNode;
-}
-
-const ThemeToggle: React.FC<ThemeToggleProps> = ({ icon }) => {
+function ThemeToggle({ icon }) {
   const { toggleTheme } = useTheme();
   
   return (
@@ -17,6 +13,6 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ icon }) => {
       {icon}
     </button>
   );
-};
+}
 
 export default ThemeToggle;

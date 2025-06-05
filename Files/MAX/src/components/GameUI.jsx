@@ -1,13 +1,6 @@
 import React from 'react';
 
-interface GameUIProps {
-  echoes: number;
-  level: number;
-  collected: number;
-  totalCollectibles: number;
-}
-
-const GameUI: React.FC<GameUIProps> = ({ echoes, level, collected, totalCollectibles }) => {
+function GameUI({ echoes, level, collected, totalCollectibles }) {
   return (
     <div className="flex justify-between w-full max-w-md mt-4 px-4">
       <div className="flex flex-col items-center">
@@ -30,6 +23,6 @@ const GameUI: React.FC<GameUIProps> = ({ echoes, level, collected, totalCollecti
       </div>
     </div>
   );
-};
+}
 
 export default GameUI;

@@ -9,7 +9,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+function ThemeProvider({ children }) {
   const [theme, setTheme] = useState<Theme>('dark');
 
   const toggleTheme = () => {
@@ -20,7 +20,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     document.documentElement.classList.remove('dark', 'light');
     document.documentElement.classList.add(theme);
     
-    // Update body background color based on theme
     document.body.style.backgroundColor = theme === 'dark' ? '#121212' : '#f8f9fa';
   }, [theme]);
 
@@ -29,12 +28,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       {children}
     </ThemeContext.Provider>
   );
-};
+}
 
-export const useTheme = (): ThemeContextType => {
+export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
   return context;
 };
+
+export { ThemeProvider };

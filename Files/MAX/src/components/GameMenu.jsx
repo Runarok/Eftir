@@ -4,19 +4,12 @@ import { Play, RotateCcw, Sun, Moon, Info, X } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { GameMode } from '../types/game';
 
-interface GameMenuProps {
-  onStartGame: () => void;
-  onRestart: () => void;
-  echoes: number;
-  level: number;
-}
-
-const GameMenu: React.FC<GameMenuProps> = ({
+function GameMenu({
   onStartGame,
   onRestart,
   echoes,
   level
-}) => {
+}) {
   const { theme, toggleTheme } = useTheme();
   const { 
     isMenuOpen, 
@@ -202,71 +195,58 @@ const GameMenu: React.FC<GameMenuProps> = ({
                   <button
                     onClick={onStartGame}
                     className={`
-                      w-full py-4 px-6 rounded-xl
-                      flex items-center justify-center gap-2
-                      font-semibold text-white
-                      transition-all duration-300
-                      focus:outline-none focus:ring-2
-                      ${theme === 'dark'
-                        ? 'bg-purple-600 hover:bg-purple-700 shadow-lg shadow-purple-900/50 focus:ring-purple-400'
-                        : 'bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 focus:ring-blue-300'}
+                      w-full py-3 rounded-xl text-center transition-all duration-300
+                      ${theme === 'dark' 
+                        ? 'bg-purple-600 hover:bg-purple-700 focus:ring-2 focus:ring-purple-500'
+                        : 'bg-blue-500 hover:bg-blue-600 focus:ring-2 focus:ring-blue-400'}
+                      focus:outline-none
                     `}
                   >
-                    <Play size={24} />
+                    <Play className="inline-block mr-2" size={20} />
                     Start Game
                   </button>
                   
-                  <button
-                    onClick={onRestart}
-                    className={`
-                      w-full py-4 px-6 rounded-xl
-                      flex items-center justify-center gap-2
-                      font-semibold
-                      transition-all duration-300
-                      focus:outline-none focus:ring-2
-                      ${theme === 'dark'
-                        ? 'bg-purple-900/30 hover:bg-purple-800/30 text-purple-300 focus:ring-purple-500'
-                        : 'bg-blue-50 hover:bg-blue-100 text-blue-600 focus:ring-blue-400'}
-                    `}
-                  >
-                    <RotateCcw size={24} />
-                    Restart
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-3">Select Game Mode</label>
-                <div className="space-y-2">
-                  {gameModes.map(({ mode, label, description }) => (
+                  {gameMode !== GameMode.EASY && (
                     <button
-                      key={mode}
-                      onClick={() => setGameMode(mode)}
+                      onClick={onRestart}
                       className={`
-                        w-full p-4 rounded-xl text-left transition-all duration-300
-                        focus:outline-none focus:ring-2
-                        ${gameMode === mode
-                          ? theme === 'dark'
-                            ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/50 focus:ring-purple-400'
-                            : 'bg-blue-600 text-white shadow-lg shadow-blue-200 focus:ring-blue-300'
-                          : theme === 'dark'
-                            ? 'bg-purple-900/30 hover:bg-purple-800/30 focus:ring-purple-500'
-                            : 'bg-blue-50 hover:bg-blue-100 focus:ring-blue-400'
-                        }
+                        w-full py-3 rounded-xl text-center transition-all duration-300
+                        ${theme === 'dark' 
+                          ? 'bg-purple-600 hover:bg-purple-700 focus:ring-2 focus:ring-purple-500'
+                          : 'bg-blue-500 hover:bg-blue-600 focus:ring-2 focus:ring-blue-400'}
+                        focus:outline-none
                       `}
                     >
-                      <div className="font-semibold mb-1">{label}</div>
-                      <div className={`
-                        text-sm
-                        ${gameMode === mode
-                          ? 'text-white/90'
-                          : theme === 'dark'
-                            ? 'text-purple-400'
-                            : 'text-blue-500'
-                        }
-                      `}>{description}</div>
+                      <RotateCcw className="inline-block mr-2" size={20} />
+                      Restart Level
                     </button>
-                  ))}
+                  )}
+                </div>
+              </div>
+              
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold">Select Game Mode</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {gameModes.map(({ mode, label, description }) => (
+                      <button
+                        key={mode}
+                        onClick={() => setGameMode(mode)}
+                        className={`
+                          p-4 rounded-xl transition-all duration-300
+                          ${theme === 'dark' 
+                            ? 'bg-purple-900/30 hover:bg-purple-900/40' 
+                            : 'bg-blue-50 hover:bg-blue-100'}
+                        `}
+                      >
+                        <div className="text-sm font-medium opacity-80 mb-1">{label}</div>
+                        <div className={`
+                          text-2xl font-bold
+                          ${mode === gameMode ? 'text-purple-300' : 'text-purple-400'}
+                        `}>{description}</div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -275,6 +255,6 @@ const GameMenu: React.FC<GameMenuProps> = ({
       </div>
     </div>
   );
-};
+}
 
 export default GameMenu;
