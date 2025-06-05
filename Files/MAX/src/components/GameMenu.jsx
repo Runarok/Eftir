@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
-import { useGameStore } from '../store/gameStore';
-import { Play, RotateCcw, Sun, Moon, Info, X } from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
-import { GameMode } from '../types/game';
+window.React = require('react');
+window.useGameStore = require('../store/gameStore');
+window.Play = require('lucide-react').Play;
+window.RotateCcw = require('lucide-react').RotateCcw;
+window.Sun = require('lucide-react').Sun;
+window.Moon = require('lucide-react').Moon;
+window.Info = require('lucide-react').Info;
+window.X = require('lucide-react').X;
+window.useTheme = require('../context/ThemeContext.jsx').useTheme;
+window.GameMode = require('../types/game');
 
-function GameMenu({
+window.GameMenu = function({
   onStartGame,
   onRestart,
   echoes,
   level
 }) {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme } = window.useTheme();
   const { 
     isMenuOpen, 
     bestScore, 
@@ -18,35 +23,35 @@ function GameMenu({
     gameMode, 
     setGameMode,
     timeRemaining 
-  } = useGameStore();
+  } = window.useGameStore();
   
-  const [showInfo, setShowInfo] = useState(false);
+  const [showInfo, setShowInfo] = React.useState(false);
 
   if (!isMenuOpen) return null;
 
   const gameModes = [
     { 
-      mode: GameMode.CLASSIC, 
+      mode: window.GameMode.CLASSIC, 
       label: 'Classic Mode',
       description: 'Limited echoes, collect all orbs, reach the exit'
     },
     { 
-      mode: GameMode.TIME_ATTACK, 
+      mode: window.GameMode.TIME_ATTACK, 
       label: 'Time Attack',
       description: 'Race against time to complete levels'
     },
     { 
-      mode: GameMode.SURVIVAL, 
+      mode: window.GameMode.SURVIVAL, 
       label: 'Survival Mode',
       description: 'More collectibles, fewer echoes, stay alive'
     },
     { 
-      mode: GameMode.PUZZLE, 
+      mode: window.GameMode.PUZZLE, 
       label: 'Puzzle Mode',
       description: 'Complex mazes with limited echoes'
     },
     { 
-      mode: GameMode.EASY, 
+      mode: window.GameMode.EASY, 
       label: 'Easy Mode',
       description: 'Unlimited echoes for casual play'
     }

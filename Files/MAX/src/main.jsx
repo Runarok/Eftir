@@ -1,13 +1,13 @@
-import React, { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App.jsx';
-import './index.css';
+window.React = require('react');
+window.createRoot = require('react-dom/client').createRoot;
+
+window.App = require('./App.jsx');
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
 
 root.render(
-  <StrictMode>
-    <App />
-  </StrictMode>
+  React.createElement(React.StrictMode, null,
+    React.createElement(window.App, null)
+  )
 );
