@@ -2,9 +2,9 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { useGameStore } from '../store/gameStore';
 import GameEngine from '../game/GameEngine';
-import GameUI from './GameUI';
-import GameMenu from './GameMenu';
-import ThemeToggle from './ThemeToggle';
+import GameUI from './GameUI.jsx';
+import GameMenu from './GameMenu.jsx';
+import ThemeToggle from './ThemeToggle.jsx';
 import { Moon, Sun } from 'lucide-react';
 
 function Game() {

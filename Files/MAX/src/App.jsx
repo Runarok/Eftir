@@ -1,6 +1,6 @@
 import React from 'react';
-import Game from './components/Game';
-import { ThemeProvider } from './context/ThemeContext';
+import Game from './components/Game.jsx';
+import { ThemeProvider } from './context/ThemeContext.jsx';
 
 function App() {
   return (
