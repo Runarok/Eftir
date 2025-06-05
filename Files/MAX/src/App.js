@@ -1,7 +1,5 @@
-window.React = require('react');
-window.Game = require('./components/Game.jsx');
-window.ThemeProvider = require('./context/ThemeContext.jsx').ThemeProvider;
-
+// App component definition
+// App component definition
 window.App = function() {
   return React.createElement(window.ThemeProvider, null,
     React.createElement("div", {
@@ -11,3 +9,12 @@ window.App = function() {
     )
   );
 };
+
+// Load components
+const scriptGame = document.createElement('script');
+scriptGame.src = './components/Game.js';
+document.head.appendChild(scriptGame);
+
+const scriptTheme = document.createElement('script');
+scriptTheme.src = './context/ThemeContext.js';
+document.head.appendChild(scriptTheme);
