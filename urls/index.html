@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Redirector</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo" id="logo">LinkHub</h1>
+                <div class="header-actions">
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="home-btn" id="homeBtn" style="display: none;">
+                        <i class="fas fa-home"></i> Home
+                    </button>
+                </div>
+            </div>
+            <p class="header-description" id="headerDescription">Your personal link management hub</p>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="search-container" id="searchContainer">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search links..." autocomplete="off">
+                <button class="search-clear" id="searchClear" style="display: none;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Loading State -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Loading...</p>
+            </div>
+
+            <!-- Showcase View -->
+            <div class="showcase" id="showcase" style="display: none;">
+                <div class="links-grid" id="linksGrid"></div>
+            </div>
+
+            <!-- Focused View -->
+            <div class="focused-view" id="focusedView" style="display: none;">
+                <div class="focused-header">
+                    <h2 id="focusedTitle"></h2>
+                    <p id="focusedDescription"></p>
+                </div>
+                <div class="focused-links" id="focusedLinks"></div>
+            </div>
+
+            <!-- 404 View -->
+            <div class="error-view" id="errorView" style="display: none;">
+                <div class="error-content">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h2>Link Not Found</h2>
+                    <p>The requested link doesn't exist or has been removed.</p>
+                    <button class="btn btn-primary" onclick="goHome()">
+                        <i class="fas fa-home"></i> Go Home
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Toast Notification -->
+        <div class="toast" id="toast">
+            <i class="fas fa-check-circle"></i>
+            <span id="toastMessage">Shortlink copied!</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
