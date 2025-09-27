@@ -1,0 +1,104 @@
+{
+  "config": {
+    "title": "LinkHub",
+    "description": "Your personal link management hub"
+  },
+  "links": [
+    {
+      "id": "github",
+      "keyword": "gh",
+      "type": "redirect",
+      "title": "GitHub Profile",
+      "description": "Visit my GitHub profile to see my latest projects and contributions.",
+      "url": "https://github.com"
+    },
+    {
+      "id": "portfolio",
+      "keyword": "work",
+      "type": "redirect",
+      "title": "Portfolio Website",
+      "description": "Check out my portfolio showcasing my best work and projects.",
+      "url": "https://example.com/portfolio"
+    },
+    {
+      "id": "social",
+      "keyword": "links",
+      "type": "showcase",
+      "title": "Social Media Links",
+      "description": "All my social media profiles and ways to connect with me.",
+      "urls": [
+        {
+          "title": "Twitter",
+          "description": "Follow me for tech updates and thoughts",
+          "url": "https://twitter.com/username"
+        },
+        {
+          "title": "LinkedIn",
+          "description": "Professional networking and career updates",
+          "url": "https://linkedin.com/in/username"
+        },
+        {
+          "title": "Instagram",
+          "description": "Personal photos and behind-the-scenes content",
+          "url": "https://instagram.com/username"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "keyword": "dev",
+      "type": "showcase",
+      "title": "Development Tools",
+      "description": "Essential tools and resources I use for development.",
+      "urls": [
+        {
+          "title": "VS Code",
+          "description": "My favorite code editor with extensions",
+          "url": "https://code.visualstudio.com"
+        },
+        {
+          "title": "Figma",
+          "description": "Design tool for UI/UX work",
+          "url": "https://figma.com"
+        },
+        {
+          "title": "Vercel",
+          "description": "Deployment platform for web projects",
+          "url": "https://vercel.com"
+        }
+      ]
+    },
+    {
+      "id": "blog",
+      "keyword": "write",
+      "type": "redirect",
+      "title": "Personal Blog",
+      "description": "Read my latest thoughts on technology, development, and life.",
+      "url": "https://example.com/blog"
+    },
+    {
+      "id": "resources",
+      "keyword": "learn",
+      "type": "showcase",
+      "title": "Learning Resources",
+      "description": "Curated list of resources for learning web development.",
+      "urls": [
+        {
+          "title": "MDN Web Docs",
+          "description": "Comprehensive web development documentation",
+          "url": "https://developer.mozilla.org"
+        },
+        {
+          "title": "freeCodeCamp",
+          "description": "Free coding bootcamp and tutorials",
+          "url": "https://freecodecamp.org"
+        },
+        {
+          "title": "JavaScript.info",
+          "description": "Modern JavaScript tutorial",
+          "url": "https://javascript.info"
+        }
+      ]
+    }
+  ]
+}
