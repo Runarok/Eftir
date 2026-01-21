@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dot Art Studio</title>  <style>
+    /* ===== MODERN CSS RESET ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    img, picture, video, canvas, svg {
+      display: block;
+      max-width: 100%;
+    }
+
+    input, button, textarea, select {
+      font: inherit;
+    }
+
+    p, h1, h2, h3, h4, h5, h6 {
+      overflow-wrap: break-word;
+    }
+
+    /* ===== DESIGN TOKENS ===== */
+    :root {
+      --color-bg: #0f0f0f;
+      --color-bg-secondary: #1a1a1a;
+      --color-bg-tertiary: #242424;
+      --color-text: #e8e8e8;
+      --color-text-secondary: #a8a8a8;
+      --color-text-muted: #6b7280;
+      --color-border: #333333;
+      --color-accent: #00d4aa;
+      --color-accent-hover: #00e8bf;
+      --color-accent-active: #00b890;
+      
+      --space-2: 2px;
+      --space-4: 4px;
+      --space-6: 6px;
+      --space-8: 8px;
+      --space-12: 12px;
+      --space-16: 16px;
+      --space-20: 20px;
+      --space-24: 24px;
+      --space-32: 32px;
+      --space-40: 40px;
+      
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5);
+      --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.6);
+      
+      --transition: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+      
+      --text-base: 14px;
+      --text-sm: 12px;
+      --text-xs: 11px;
+      --text-lg: 16px;
+      --text-xl: 20px;
+      
+      --line-height-tight: 1.2;
+      --line-height-normal: 1.5;
+      --line-height-relaxed: 1.75;
+    }
+
+    /* ===== BASE TYPOGRAPHY ===== */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      line-height: var(--line-height-normal);
+      font-size: var(--text-base);
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      line-height: var(--line-height-tight);
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+
+    h1 { font-size: var(--text-xl); }
+    h2 { font-size: var(--text-lg); }
+    h3 { font-size: var(--text-base); }
+
+    label {
+      font-size: var(--text-sm);
+      font-weight: 500;
+    }
+
+    small, .text-xs {
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      padding: var(--space-20) var(--space-32);
+      border-bottom: 1px solid var(--color-border);
+      background-color: var(--color-bg-secondary);
+      flex-shrink: 0;
+    }
+
+    .header__inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-24);
+    }
+
+    .header__title {
+      font-size: var(--text-xl);
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    .header__accent {
+      color: var(--color-accent);
+    }
+
+    .header__version {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    /* ===== MAIN LAYOUT ===== */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      gap: var(--space-24);
+      padding: var(--space-24);
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: 280px;
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-20);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-20);
+      box-shadow: var(--shadow-sm);
+      flex-shrink: 0;
+    }
+
+    .sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 3px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb:hover {
+      background: var(--color-text-muted);
+    }
+
+    /* ===== CONTROL GROUPS ===== */
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-8);
+    }
+
+    .control-group__label {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+    }
+
+    .control-group__divider {
+      height: 1px;
+      background: var(--color-border);
+      margin: var(--space-12) 0;
+    }
+
+    /* ===== FORM INPUTS ===== */
+    input[type="range"] {
+      width: 100%;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--color-border);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      transition: background-color var(--transition);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      transition: var(--transition);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: var(--color-accent-hover);
+      transform: scale(1.1);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      transition: var(--transition);
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      background: var(--color-accent-hover);
+      transform: scale(1.1);
+    }
+
+    input[type="range"]::-moz-range-track {
+      background: transparent;
+      border: none;
+    }
+
+    input[type="range"]::-moz-range-progress {
+      background: var(--color-accent);
+      height: 3px;
+      border-radius: 2px;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-8);
+    }
+
+    .control-row__value {
+      font-size: var(--text-xs);
+      color: var(--color-accent);
+      font-weight: 600;
+      min-width: 32px;
+      text-align: right;
+      font-family: 'Monaco', monospace;
+    }
+
+    select {
+      width: 100%;
+      padding: var(--space-8) var(--space-12);
+      background-color: var(--color-bg-tertiary);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    select:hover {
+      border-color: var(--color-accent);
+      background-color: var(--color-bg-tertiary);
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
+    }
+
+    /* ===== CHECKBOXES ===== */
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-8);
+    }
+
+    .checkbox {
+      display: flex;
+      align-items: center;
+      gap: var(--space-8);
+      cursor: pointer;
+      padding: var(--space-4) 0;
+      transition: color var(--transition);
+    }
+
+    .checkbox input {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: var(--color-accent);
+    }
+
+    .checkbox label {
+      font-size: var(--text-sm);
+      cursor: pointer;
+      flex: 1;
+      font-weight: 500;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      padding: var(--space-8) var(--space-16);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background-color: var(--color-bg-tertiary);
+      color: var(--color-text);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-8);
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      border-color: var(--color-accent);
+      background-color: var(--color-bg-tertiary);
+      color: var(--color-accent);
+    }
+
+    .btn:active {
+      background-color: var(--color-accent-active);
+      border-color: var(--color-accent-active);
+      color: var(--color-bg);
+    }
+
+    .btn--primary {
+      background-color: var(--color-accent);
+      border-color: var(--color-accent);
+      color: var(--color-bg);
+      font-weight: 600;
+    }
+
+    .btn--primary:hover {
+      background-color: var(--color-accent-hover);
+      border-color: var(--color-accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn--primary:active {
+      background-color: var(--color-accent-active);
+      border-color: var(--color-accent-active);
+      transform: translateY(0);
+    }
+
+    .btn--small {
+      padding: var(--space-6) var(--space-12);
+      font-size: var(--text-xs);
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-8);
+    }
+
+    .btn-group--row {
+      flex-direction: row;
+    }
+
+    .btn-group--row .btn {
+      flex: 1;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ===== CANVAS AREA ===== */
+    .canvas-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-20);
+      min-height: 0;
+    }
+
+    .canvas-wrapper {
+      flex: 1;
+      display: flex;
+      gap: var(--space-20);
+      min-height: 0;
+    }
+
+    .canvas-pane {
+      flex: 1;
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+      transition: border-color var(--transition);
+    }
+
+    .canvas-pane:hover {
+      border-color: var(--color-border);
+    }
+
+    canvas {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .canvas-placeholder {
+      color: var(--color-text-secondary);
+      font-size: var(--text-sm);
+      text-align: center;
+      padding: var(--space-20);
+      pointer-events: none;
+      line-height: var(--line-height-relaxed);
+    }
+
+    /* ===== DRAG & DROP ===== */
+    .drop-zone {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition);
+      position: absolute;
+      top: 0;
+      left: 0;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .drop-zone.active {
+      background-color: rgba(0, 212, 170, 0.08);
+      border: 2px dashed var(--color-accent);
+    }
+
+    .drop-zone input {
+      display: none;
+    }
+
+    /* ===== INFO BADGE ===== */
+    .info-badge {
+      background-color: var(--color-bg-tertiary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-8) var(--space-12);
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-8);
+    }
+
+    .info-badge__label {
+      color: var(--color-text);
+      font-weight: 600;
+    }
+
+    /* ===== ACTIONS ===== */
+    .canvas-actions {
+      display: flex;
+      gap: var(--space-16);
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-16);
+      box-shadow: var(--shadow-sm);
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .canvas-actions .btn {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      .main {
+        flex-direction: column;
+        gap: var(--space-20);
+      }
+
+      .sidebar {
+        width: 100%;
+        max-height: 280px;
+      }
+
+      .canvas-wrapper {
+        flex-direction: column;
+      }
+    }
+
+    /* ===== UTILITY ===== */
+    .divider {
+      height: 1px;
+      background-color: var(--color-border);
+      margin: var(--space-16) 0;
+    }
+
+    .text-xs {
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+    }
+
+    .text-mono {
+      font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+      font-size: var(--text-xs);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header__inner">
+      <h1 class="header__title">Dot Art <span class="header__accent">Studio</span></h1>
+      <div style="font-size: 12px; color: var(--color-text-secondary);">v1.0</div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="main">
+    <!-- Sidebar Controls -->
+    <aside class="sidebar">
+      <!-- Upload Section -->
+      <div class="control-group">
+        <label class="control-group__label">Image Upload</label>
+        <div class="drop-zone" id="dropZone">
+          <input type="file" id="fileInput" accept="image/*" />
+          <div style="text-align: center; pointer-events: none;">
+            <div style="font-size: 28px; margin-bottom: 8px;">↓</div>
+            <div style="font-size: 14px; color: var(--color-text); margin-bottom: 4px;">Drop image here</div>
+            <div style="font-size: 12px; color: var(--color-text-secondary);">or click to browse</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-group__divider"></div>
+
+      <!-- Grid Settings -->
+      <div class="control-group">
+        <label class="control-group__label">Grid Settings</label>
+        
+        <div>
+          <div class="control-row">
+            <span>Dots per row</span>
+            <span class="control-row__value" id="dotGridValue">120</span>
+          </div>
+          <input type="range" id="dotGrid" min="20" max="400" value="120" />
+        </div>
+
+        <div>
+          <div class="control-row">
+            <span>Dot spacing (px)</span>
+            <span class="control-row__value" id="spacingValue">1</span>
+          </div>
+          <input type="range" id="dotSpacing" min="0" max="4" value="1" />
+        </div>
+      </div>
+
+      <div class="control-group__divider"></div>
+
+      <!-- Dot Size -->
+      <div class="control-group">
+        <label class="control-group__label">Dot Size</label>
+        
+        <div>
+          <div class="control-row">
+            <span>Max radius (px)</span>
+            <span class="control-row__value" id="maxRadiusValue">6</span>
+          </div>
+          <input type="range" id="maxRadius" min="1" max="30" value="6" />
+        </div>
+
+        <div>
+          <div class="control-row">
+            <span>Min radius (px)</span>
+            <span class="control-row__value" id="minRadiusValue">0.5</span>
+          </div>
+          <input type="range" id="minRadius" min="0.1" max="5" value="0.5" step="0.1" />
+        </div>
+
+        <div class="checkbox">
+          <input type="checkbox" id="variableSizeToggle" checked />
+          <label for="variableSizeToggle">Variable dot size</label>
+        </div>
+      </div>
+
+      <div class="control-group__divider"></div>
+
+      <!-- Color Settings -->
+      <div class="control-group">
+        <label class="control-group__label">Color & Mode</label>
+        
+        <select id="colorMode">
+          <option value="color">Colored dots</option>
+          <option value="mono">Monochrome</option>
+          <option value="bw">Black & White</option>
+          <option value="sepia">Sepia tone</option>
+        </select>
+
+        <div class="checkbox">
+          <input type="checkbox" id="invertToggle" />
+          <label for="invertToggle">Invert colors</label>
+        </div>
+      </div>
+
+      <div class="control-group__divider"></div>
+
+      <!-- Background -->
+      <div class="control-group">
+        <label class="control-group__label">Background</label>
+        <select id="bgMode">
+          <option value="black">Black</option>
+          <option value="white">White</option>
+          <option value="transparent">Transparent</option>
+        </select>
+      </div>
+
+      <div class="control-group__divider"></div>
+
+      <!-- Quality & Advanced -->
+      <div class="control-group">
+        <label class="control-group__label">Advanced</label>
+
+        <div class="checkbox">
+          <input type="checkbox" id="aaToggle" checked />
+          <label for="aaToggle">Anti-aliasing</label>
+        </div>
+
+        <div class="checkbox">
+          <input type="checkbox" id="contrastToggle" />
+          <label for="contrastToggle">Auto contrast</label>
+        </div>
+
+        <div>
+          <div class="control-row">
+            <span>Blur (px)</span>
+            <span class="control-row__value" id="blurValue">0</span>
+          </div>
+          <input type="range" id="blur" min="0" max="8" value="0" />
+        </div>
+      </div>
+
+      <div class="control-group__divider"></div>
+
+      <!-- Presets -->
+      <div class="control-group">
+        <label class="control-group__label">Presets</label>
+        <div class="btn-group">
+          <button class="btn btn--small" onclick="applyPreset('detailed')">Detailed</button>
+          <button class="btn btn--small" onclick="applyPreset('balanced')">Balanced</button>
+          <button class="btn btn--small" onclick="applyPreset('artistic')">Artistic</button>
+        </div>
+      </div>
+
+      <div class="control-group__divider"></div>
+
+      <!-- Reset -->
+      <button class="btn" onclick="resetSettings()">Reset all</button>
+    </aside>
+
+    <!-- Canvas Area -->
+    <div class="canvas-container">
+      <div class="canvas-wrapper">
+        <!-- Original Image -->
+        <div class="canvas-pane">
+          <canvas id="hiddenCanvas" style="display: none;"></canvas>
+          <img id="srcImg" style="display: none;" alt="Source" />
+          <div class="drop-zone" id="dropZone2">
+            <input type="file" id="fileInput2" accept="image/*" />
+            <div class="canvas-placeholder">
+              <div style="font-size: 32px; margin-bottom: 12px;">📷</div>
+              <div>Drop image here to convert</div>
+              <div style="font-size: 12px; margin-top: 8px; color: var(--color-text-secondary);">or click to select from device</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dot Art Preview -->
+        <div class="canvas-pane">
+          <canvas id="dotCanvas"></canvas>
+          <div class="canvas-placeholder" id="dotPlaceholder">
+            <div style="font-size: 32px; margin-bottom: 12px;">✨</div>
+            <div>Dot art preview</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions & Info -->
+      <div class="canvas-actions">
+        <button class="btn btn--primary" id="downloadPng">
+          <span>⬇</span>
+          <span>PNG</span>
+        </button>
+        <button class="btn btn--primary" id="downloadSvg">
+          <span>⬇</span>
+          <span>SVG</span>
+        </button>
+        <button class="btn" id="downloadJson">
+          <span>⬇</span>
+          <span>Data (JSON)</span>
+        </button>
+        <div class="info-badge">
+          <span class="info-badge__label">Size:</span>
+          <span id="sizeInfo">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  // DOM Elements
+  const fileInput = document.getElementById('fileInput');
+  const fileInput2 = document.getElementById('fileInput2');
+  const dropZone = document.getElementById('dropZone');
+  const dropZone2 = document.getElementById('dropZone2');
+  const srcImg = document.getElementById('srcImg');
+  const hiddenCanvas = document.getElementById('hiddenCanvas');
+  const hiddenCtx = hiddenCanvas.getContext('2d');
+  const dotCanvas = document.getElementById('dotCanvas');
+  const dotCtx = dotCanvas.getContext('2d');
+  const dotPlaceholder = document.getElementById('dotPlaceholder');
+  const sizeInfo = document.getElementById('sizeInfo');
+
+  // Controls
+  const dotGridInput = document.getElementById('dotGrid');
+  const dotGridValue = document.getElementById('dotGridValue');
+  const spacingInput = document.getElementById('dotSpacing');
+  const spacingValue = document.getElementById('spacingValue');
+  const maxRadiusInput = document.getElementById('maxRadius');
+  const maxRadiusValue = document.getElementById('maxRadiusValue');
+  const minRadiusInput = document.getElementById('minRadius');
+  const minRadiusValue = document.getElementById('minRadiusValue');
+  const variableSizeToggle = document.getElementById('variableSizeToggle');
+  const colorModeSelect = document.getElementById('colorMode');
+  const invertToggle = document.getElementById('invertToggle');
+  const bgModeSelect = document.getElementById('bgMode');
+  const aaToggle = document.getElementById('aaToggle');
+  const contrastToggle = document.getElementById('contrastToggle');
+  const blurInput = document.getElementById('blur');
+  const blurValue = document.getElementById('blurValue');
+
+  // Buttons
+  const downloadPngBtn = document.getElementById('downloadPng');
+  const downloadSvgBtn = document.getElementById('downloadSvg');
+  const downloadJsonBtn = document.getElementById('downloadJson');
+
+  let imgLoaded = false;
+  let imgNaturalWidth = 0;
+  let imgNaturalHeight = 0;
+
+  // Presets
+  const presets = {
+    detailed: { dotGrid: 250, maxRadius: 4, minRadius: 0.2, spacing: 0 },
+    balanced: { dotGrid: 120, maxRadius: 6, minRadius: 0.5, spacing: 1 },
+    artistic: { dotGrid: 60, maxRadius: 12, minRadius: 1, spacing: 2 }
+  };
+
+  window.applyPreset = (name) => {
+    const preset = presets[name];
+    dotGridInput.value = preset.dotGrid;
+    maxRadiusInput.value = preset.maxRadius;
+    minRadiusInput.value = preset.minRadius;
+    spacingInput.value = preset.spacing;
+    updateLabels();
+    updateCanvases();
+  };
+
+  window.resetSettings = () => {
+    dotGridInput.value = 120;
+    spacingInput.value = 1;
+    maxRadiusInput.value = 6;
+    minRadiusInput.value = 0.5;
+    blurInput.value = 0;
+    variableSizeToggle.checked = true;
+    invertToggle.checked = false;
+    contrastToggle.checked = false;
+    aaToggle.checked = true;
+    colorModeSelect.value = 'color';
+    bgModeSelect.value = 'black';
+    updateLabels();
+    updateCanvases();
+  };
+
+  function updateLabels() {
+    dotGridValue.textContent = dotGridInput.value;
+    spacingValue.textContent = spacingInput.value;
+    maxRadiusValue.textContent = maxRadiusInput.value;
+    minRadiusValue.textContent = minRadiusInput.value.substring(0, 3);
+    blurValue.textContent = blurInput.value;
+  }
+
+  // Drag & Drop handling
+  function setupDropZone(zone, inputEl) {
+    zone.addEventListener('click', () => inputEl.click());
+    zone.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.classList.add('active');
+    });
+    zone.addEventListener('dragleave', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.target === zone || zone.contains(e.relatedTarget)) return;
+      zone.classList.remove('active');
+    });
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.classList.remove('active');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        inputEl.files = files;
+        handleFileSelect(files[0]);
+      }
+    });
+    inputEl.addEventListener('change', e => {
+      if (e.target.files.length > 0) {
+        handleFileSelect(e.target.files[0]);
+      }
+    });
+  }
+
+  setupDropZone(dropZone, fileInput);
+  setupDropZone(dropZone2, fileInput2);
+
+  function handleFileSelect(file) {
+    const url = URL.createObjectURL(file);
+    srcImg.onload = () => {
+      imgNaturalWidth = srcImg.naturalWidth;
+      imgNaturalHeight = srcImg.naturalHeight;
+      imgLoaded = true;
+      dotPlaceholder.style.display = 'none';
+      dropZone.style.display = 'none';
+      dropZone2.style.display = 'none';
+      srcImg.style.display = 'block';
+      updateCanvases();
+      URL.revokeObjectURL(url);
+    };
+    srcImg.src = url;
+  }
+
+  function updateCanvases() {
+    if (!imgLoaded) return;
+
+    const paneRect = dotCanvas.parentElement.getBoundingClientRect();
+    const maxW = paneRect.width - 2;
+    const maxH = paneRect.height - 2;
+
+    const scale = Math.min(maxW / imgNaturalWidth, maxH / imgNaturalHeight, 1);
+    const w = Math.floor(imgNaturalWidth * scale);
+    const h = Math.floor(imgNaturalHeight * scale);
+
+    hiddenCanvas.width = w;
+    hiddenCanvas.height = h;
+    hiddenCtx.clearRect(0, 0, w, h);
+
+    // Apply blur if needed
+    const blurAmount = parseInt(blurInput.value, 10);
+    if (blurAmount > 0) {
+      hiddenCtx.filter = `blur(${blurAmount}px)`;
+    }
+
+    hiddenCtx.drawImage(srcImg, 0, 0, w, h);
+    hiddenCtx.filter = 'none';
+
+    dotCanvas.width = w;
+    dotCanvas.height = h;
+
+    renderDots();
+  }
+
+  function renderDots() {
+    if (!imgLoaded) return;
+
+    const w = hiddenCanvas.width;
+    const h = hiddenCanvas.height;
+    const dotsPerRow = parseInt(dotGridInput.value, 10);
+    const maxRadius = parseFloat(maxRadiusInput.value);
+    const minRadius = parseFloat(minRadiusInput.value);
+    const spacing = parseInt(spacingInput.value, 10);
+    const colorMode = colorModeSelect.value;
+    const bgMode = bgModeSelect.value;
+    const inverted = invertToggle.checked;
+    const variableSize = variableSizeToggle.checked;
+    const contrast = contrastToggle.checked;
+
+    // Background
+    dotCtx.clearRect(0, 0, w, h);
+    if (bgMode === 'black') {
+      dotCtx.fillStyle = '#000';
+      dotCtx.fillRect(0, 0, w, h);
+    } else if (bgMode === 'white') {
+      dotCtx.fillStyle = '#fff';
+      dotCtx.fillRect(0, 0, w, h);
+    }
+
+    const stepX = w / dotsPerRow + spacing;
+    const stepY = stepX;
+    const cols = Math.ceil(w / stepX);
+    const rows = Math.ceil(h / stepY);
+
+    const imgData = hiddenCtx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        const cx = Math.floor((x + 0.5) * stepX);
+        const cy = Math.floor((y + 0.5) * stepY);
+
+        if (cx >= w || cy >= h) continue;
+
+        const idx = (cy * w + cx) * 4;
+        let r = data[idx];
+        let g = data[idx + 1];
+        let b = data[idx + 2];
+
+        // Apply contrast if enabled
+        if (contrast) {
+          const factor = 1.3;
+          r = Math.min(255, r * factor);
+          g = Math.min(255, g * factor);
+          b = Math.min(255, b * factor);
+        }
+
+        let luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        if (inverted) luminance = 1 - luminance;
+
+        let radius;
+        if (variableSize) {
+          radius = minRadius + (1 - luminance) * (maxRadius - minRadius);
+        } else {
+          radius = luminance > 0.5 ? minRadius : maxRadius;
+        }
+
+        if (radius <= 0.1) continue;
+
+        // Color assignment
+        if (colorMode === 'color') {
+          if (inverted) {
+            dotCtx.fillStyle = `rgb(${255 - r},${255 - g},${255 - b})`;
+          } else {
+            dotCtx.fillStyle = `rgb(${r},${g},${b})`;
+          }
+        } else if (colorMode === 'mono') {
+          const v = Math.round(luminance * 255);
+          dotCtx.fillStyle = `rgb(${v},${v},${v})`;
+        } else if (colorMode === 'bw') {
+          dotCtx.fillStyle = luminance > 0.5 ? '#fff' : '#000';
+        } else if (colorMode === 'sepia') {
+          const tone = Math.round(luminance * 255);
+          dotCtx.fillStyle = `rgb(${Math.min(255, tone * 1.2)},${tone},${Math.max(0, tone * 0.5)})`;
+        }
+
+        // Draw dot
+        if (aaToggle.checked) {
+          dotCtx.globalAlpha = 0.95;
+        }
+        dotCtx.beginPath();
+        dotCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+        dotCtx.fill();
+        dotCtx.globalAlpha = 1;
+      }
+    }
+
+    // Update size info
+    sizeInfo.textContent = `${w} × ${h}`;
+  }
+
+  window.addEventListener('resize', () => {
+    if (imgLoaded) updateCanvases();
+  });
+
+  // Control listeners
+  dotGridInput.addEventListener('input', () => {
+    updateLabels();
+    updateCanvases();
+  });
+  spacingInput.addEventListener('input', () => {
+    updateLabels();
+    updateCanvases();
+  });
+  maxRadiusInput.addEventListener('input', () => {
+    updateLabels();
+    updateCanvases();
+  });
+  minRadiusInput.addEventListener('input', () => {
+    updateLabels();
+    updateCanvases();
+  });
+  variableSizeToggle.addEventListener('change', updateCanvases);
+  colorModeSelect.addEventListener('change', updateCanvases);
+  invertToggle.addEventListener('change', updateCanvases);
+  bgModeSelect.addEventListener('change', updateCanvases);
+  aaToggle.addEventListener('change', updateCanvases);
+  contrastToggle.addEventListener('change', updateCanvases);
+  blurInput.addEventListener('input', () => {
+    updateLabels();
+    updateCanvases();
+  });
+
+  // Download PNG
+  downloadPngBtn.addEventListener('click', () => {
+    if (!imgLoaded) return;
+    const link = document.createElement('a');
+    link.download = 'dot-art.png';
+    link.href = dotCanvas.toDataURL('image/png');
+    link.click();
+  });
+
+  // Download SVG
+  downloadSvgBtn.addEventListener('click', () => {
+    if (!imgLoaded) return;
+
+    const w = dotCanvas.width;
+    const h = dotCanvas.height;
+    const dotsPerRow = parseInt(dotGridInput.value, 10);
+    const maxRadius = parseFloat(maxRadiusInput.value);
+    const minRadius = parseFloat(minRadiusInput.value);
+    const spacing = parseInt(spacingInput.value, 10);
+    const colorMode = colorModeSelect.value;
+    const bgMode = bgModeSelect.value;
+    const inverted = invertToggle.checked;
+    const variableSize = variableSizeToggle.checked;
+    const contrast = contrastToggle.checked;
+
+    const stepX = w / dotsPerRow + spacing;
+    const stepY = stepX;
+    const cols = Math.ceil(w / stepX);
+    const rows = Math.ceil(h / stepY);
+
+    const imgData = hiddenCtx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+
+    let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">`;
+    if (bgMode !== 'transparent') {
+      const bg = bgMode === 'white' ? '#ffffff' : '#000000';
+      svg += `<rect width="100%" height="100%" fill="${bg}"/>`;
+    }
+
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        const cx = Math.floor((x + 0.5) * stepX);
+        const cy = Math.floor((y + 0.5) * stepY);
+
+        if (cx >= w || cy >= h) continue;
+
+        const idx = (cy * w + cx) * 4;
+        let r = data[idx];
+        let g = data[idx + 1];
+        let b = data[idx + 2];
+
+        if (contrast) {
+          const factor = 1.3;
+          r = Math.min(255, r * factor);
+          g = Math.min(255, g * factor);
+          b = Math.min(255, b * factor);
+        }
+
+        let luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        if (inverted) luminance = 1 - luminance;
+
+        let radius;
+        if (variableSize) {
+          radius = minRadius + (1 - luminance) * (maxRadius - minRadius);
+        } else {
+          radius = luminance > 0.5 ? minRadius : maxRadius;
+        }
+
+        if (radius <= 0.1) continue;
+
+        let fill;
+        if (colorMode === 'color') {
+          if (inverted) {
+            fill = `rgb(${255 - r},${255 - g},${255 - b})`;
+          } else {
+            fill = `rgb(${r},${g},${b})`;
+          }
+        } else if (colorMode === 'mono') {
+          const v = Math.round(luminance * 255);
+          fill = `rgb(${v},${v},${v})`;
+        } else if (colorMode === 'bw') {
+          fill = luminance > 0.5 ? '#fff' : '#000';
+        } else if (colorMode === 'sepia') {
+          const tone = Math.round(luminance * 255);
+          fill = `rgb(${Math.min(255, tone * 1.2)},${tone},${Math.max(0, tone * 0.5)})`;
+        }
+
+        svg += `<circle cx="${cx}" cy="${cy}" r="${radius.toFixed(2)}" fill="${fill}"/>`;
+      }
+    }
+
+    svg += `</svg>`;
+
+    const blob = new Blob([svg], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'dot-art.svg';
+    link.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Download JSON (dot data)
+  downloadJsonBtn.addEventListener('click', () => {
+    if (!imgLoaded) return;
+
+    const w = dotCanvas.width;
+    const h = dotCanvas.height;
+    const dotsPerRow = parseInt(dotGridInput.value, 10);
+    const maxRadius = parseFloat(maxRadiusInput.value);
+    const minRadius = parseFloat(minRadiusInput.value);
+    const spacing = parseInt(spacingInput.value, 10);
+
+    const stepX = w / dotsPerRow + spacing;
+    const stepY = stepX;
+    const cols = Math.ceil(w / stepX);
+    const rows = Math.ceil(h / stepY);
+
+    const imgData = hiddenCtx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+
+    const dots = [];
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        const cx = Math.floor((x + 0.5) * stepX);
+        const cy = Math.floor((y + 0.5) * stepY);
+        if (cx >= w || cy >= h) continue;
+
+        const idx = (cy * w + cx) * 4;
+        const r = data[idx];
+        const g = data[idx + 1];
+        const b = data[idx + 2];
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        const radius = minRadius + (1 - luminance) * (maxRadius - minRadius);
+
+        if (radius > 0.1) {
+          dots.push({ x: cx, y: cy, r: Math.round(radius * 100) / 100, rgb: [r, g, b] });
+        }
+      }
+    }
+
+    const jsonData = JSON.stringify({
+      meta: {
+        width: w,
+        height: h,
+        dotsCount: dots.length,
+        settings: {
+          dotsPerRow,
+          maxRadius,
+          minRadius,
+          spacing,
+          colorMode: colorModeSelect.value,
+          background: bgModeSelect.value
+        }
+      },
+      dots
+    }, null, 2);
+
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'dot-art.json';
+    link.click();
+    URL.revokeObjectURL(url);
+  });
+})();
+</script>
+</body>
+</html>

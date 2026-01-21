@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Duplicate File Cleaner</title>
+  <link
+    rel="icon"
+    href="https://raw.githubusercontent.com/Runarok/GenAI-plus/main/GenAI-plus.png"
+    type="image/png"
+  />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(
+          135deg,
+          rgba(20, 184, 255, 0.15),
+          rgba(34, 197, 94, 0.1)
+        ),
+        linear-gradient(to bottom, #0f0f1e 0%, #1a1a2e 50%, #0f0f1e 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      color: #e5e7eb;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 16px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Glassmorphism Base */
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Main Panel */
+    .main-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .icon-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .title h1 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+
+    .title p {
+      font-size: 0.8rem;
+      color: #a0a0b0;
+      margin-top: 2px;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .file-input-btn {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+    }
+
+    .file-input-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
+    }
+
+    .file-input-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .stat {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      color: #a0a0b0;
+    }
+
+    .stat strong {
+      color: #22c55e;
+      font-weight: 600;
+    }
+
+    .stat.warning strong {
+      color: #ef4444;
+    }
+
+    /* Search */
+    .search-wrapper {
+      position: relative;
+    }
+
+    .search-wrapper input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e5e7eb;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+
+    .search-wrapper input::placeholder {
+      color: #707080;
+    }
+
+    .search-wrapper input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(34, 197, 94, 0.5);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+    }
+
+    /* File List */
+    .file-list {
+      max-height: 520px;
+      overflow-y: auto;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .file-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .file-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .file-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+
+    .file-list::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Group Header */
+    .group-header {
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px 14px;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+    }
+
+    .group-header span {
+      color: #a0a0b0;
+    }
+
+    .group-header strong {
+      color: #22c55e;
+    }
+
+    .group-title {
+      flex: 1;
+    }
+
+    .group-btns {
+      display: flex;
+      gap: 4px;
+    }
+
+    .group-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #a0a0b0;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      transition: all 0.2s ease;
+    }
+
+    .group-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #e5e7eb;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* File Item */
+    .file-item {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.15s ease;
+      cursor: pointer;
+    }
+
+    .file-item:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .file-item.duplicate {
+      background: rgba(239, 68, 68, 0.08);
+    }
+
+    .file-item.base {
+      background: rgba(34, 197, 94, 0.08);
+    }
+
+    /* Checkbox */
+    .checkbox {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+
+    .checkbox:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .checkbox input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .checkbox input:checked + .check-icon {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      transform: scale(1);
+    }
+
+    .check-icon {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 2px;
+      transform: scale(0.8);
+      transition: all 0.15s ease;
+      font-size: 0.7rem;
+      color: white;
+    }
+
+    /* File Info */
+    .file-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .file-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-path {
+      font-size: 0.7rem;
+      color: #707080;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* File Tag */
+    .file-tag {
+      font-size: 0.65rem;
+      padding: 3px 7px;
+      border-radius: 4px;
+      background: rgba(34, 197, 94, 0.15);
+      color: #86efac;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      flex-shrink: 0;
+    }
+
+    .file-tag.dup {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    /* Delete Button */
+    .delete-btn {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.65rem;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .delete-btn:hover {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #fecaca;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .side-section {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 16px;
+      backdrop-filter: blur(20px);
+    }
+
+    .side-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #e5e7eb;
+    }
+
+    .side-btn {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #a0a0b0;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
+      margin-bottom: 8px;
+    }
+
+    .side-btn:last-child {
+      margin-bottom: 0;
+    }
+
+    .side-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #e5e7eb;
+    }
+
+    .side-btn:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    .side-btn.primary {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      border: none;
+      color: white;
+      font-weight: 500;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+    }
+
+    .side-btn.primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
+    }
+
+    .side-btn.danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border: none;
+      color: white;
+      font-weight: 500;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .side-btn.danger:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+    }
+
+    /* Log Area */
+    .log-area {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 0.75rem;
+      color: #a0a0b0;
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: "Monaco", "Courier New", monospace;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .log-area::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .log-area::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+    }
+
+    .log-success {
+      color: #86efac;
+    }
+
+    .log-error {
+      color: #fca5a5;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #707080;
+    }
+
+    .empty-state p {
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Main Panel -->
+    <div class="main-panel glass">
+      <!-- Header -->
+      <div class="header">
+        <div class="title">
+          <div class="icon-logo">
+            <img
+              src="https://raw.githubusercontent.com/Runarok/GenAI-plus/main/GenAI-plus.png"
+              alt="GenAI+"
+            />
+          </div>
+          <div>
+            <h1>Duplicate Cleaner</h1>
+            <p>Find & remove duplicate files instantly</p>
+          </div>
+        </div>
+        <div class="file-input-wrapper">
+          <label for="fileInput" class="file-input-btn">
+            + Select Files
+          </label>
+          <input
+            type="file"
+            id="fileInput"
+            multiple
+            webkitdirectory
+          />
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-bar">
+        <div class="stat">
+          Total: <strong id="statTotal">0</strong>
+        </div>
+        <div class="stat warning">
+          Groups: <strong id="statGroups">0</strong>
+        </div>
+        <div class="stat warning">
+          Duplicates: <strong id="statDups">0</strong>
+        </div>
+        <div class="stat">
+          Selected: <strong id="statSelected">0</strong>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="search-wrapper">
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Filter files by name or path…"
+        />
+      </div>
+
+      <!-- File List -->
+      <div id="fileList" class="file-list">
+        <div class="empty-state">
+          <p>No files yet. Select a folder to scan.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Actions -->
+      <div class="side-section">
+        <div class="side-title">Actions</div>
+        <button id="btnSelectAll" class="side-btn" disabled>
+          Select All Duplicates
+        </button>
+        <button id="btnClear" class="side-btn" disabled>
+          Clear Selection
+        </button>
+        <button id="btnDelete" class="side-btn danger" disabled>
+          Delete Selected
+        </button>
+      </div>
+
+      <!-- Status -->
+      <div class="side-section">
+        <div class="side-title">Status</div>
+        <div class="log-area" id="logArea">
+          Ready to scan files.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById("fileInput");
+    const fileList = document.getElementById("fileList");
+    const searchInput = document.getElementById("searchInput");
+    const logArea = document.getElementById("logArea");
+
+    const statTotal = document.getElementById("statTotal");
+    const statGroups = document.getElementById("statGroups");
+    const statDups = document.getElementById("statDups");
+    const statSelected = document.getElementById("statSelected");
+
+    const btnSelectAll = document.getElementById("btnSelectAll");
+    const btnClear = document.getElementById("btnClear");
+    const btnDelete = document.getElementById("btnDelete");
+
+    let allFiles = [];
+    let hashMap = new Map(); // hash -> {files: [], id: number}
+    let hashOrder = [];
+    let selected = new Set(); // Format: "hash|index"
+
+    async function hashFile(file) {
+      const buffer = await file.arrayBuffer();
+      const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    function formatSize(bytes) {
+      if (bytes === 0) return "0 B";
+      const k = 1024;
+      const sizes = ["B", "KB", "MB", "GB"];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return (bytes / Math.pow(k, i)).toFixed(1) + " " + sizes[i];
+    }
+
+    function updateStats() {
+      const total = allFiles.length;
+      const groups = hashOrder.filter((h) => hashMap.get(h).files.length > 1)
+        .length;
+      let dups = 0;
+      hashMap.forEach((g) => {
+        if (g.files.length > 1) dups += g.files.length - 1;
+      });
+
+      statTotal.textContent = total;
+      statGroups.textContent = groups;
+      statDups.textContent = dups;
+      statSelected.textContent = selected.size;
+
+      btnSelectAll.disabled = groups === 0;
+      btnClear.disabled = selected.size === 0;
+      btnDelete.disabled = selected.size === 0;
+    }
+
+    function renderList() {
+      const filter = searchInput.value.toLowerCase();
+      fileList.innerHTML = "";
+
+      if (hashOrder.length === 0) {
+        fileList.innerHTML =
+          '<div class="empty-state"><p>No files scanned yet.</p></div>';
+        return;
+      }
+
+      hashOrder.forEach((hash) => {
+        const group = hashMap.get(hash);
+        if (!group) return;
+
+        const anyMatch = !filter ||
+          group.files.some(
+            (f) => f.name.toLowerCase().includes(filter) ||
+              (f.path || "").toLowerCase().includes(filter)
+          );
+        if (!anyMatch) return;
+
+        if (group.files.length === 1) {
+          const f = group.files[0];
+          const item = createFileItem(f, hash, 0, false);
+          fileList.appendChild(item);
+          return;
+        }
+
+        // Group header
+        const header = document.createElement("div");
+        header.className = "group-header";
+
+        const title = document.createElement("div");
+        title.className = "group-title";
+        const totalSize = group.files.reduce((s, f) => s + f.size, 0);
+        title.innerHTML = `<strong>${group.files.length}</strong> duplicates · ${formatSize(totalSize)}`;
+
+        const btns = document.createElement("div");
+        btns.className = "group-btns";
+
+        const btnKeepOld = document.createElement("button");
+        btnKeepOld.className = "group-btn";
+        btnKeepOld.textContent = "Keep oldest";
+        btnKeepOld.addEventListener("click", () => {
+          const sorted = [...group.files].sort(
+            (a, b) => (a.lastModified || 0) - (b.lastModified || 0)
+          );
+          group.files.forEach((f, i) => {
+            const key = `${hash}|${i}`;
+            if (f !== sorted[0]) {
+              selected.add(key);
+            } else {
+              selected.delete(key);
+            }
+          });
+          updateStats();
+          renderList();
+        });
+
+        const btnKeepNew = document.createElement("button");
+        btnKeepNew.className = "group-btn";
+        btnKeepNew.textContent = "Keep newest";
+        btnKeepNew.addEventListener("click", () => {
+          const sorted = [...group.files].sort(
+            (a, b) => (b.lastModified || 0) - (a.lastModified || 0)
+          );
+          group.files.forEach((f, i) => {
+            const key = `${hash}|${i}`;
+            if (f !== sorted[0]) {
+              selected.add(key);
+            } else {
+              selected.delete(key);
+            }
+          });
+          updateStats();
+          renderList();
+        });
+
+        const btnClearGroup = document.createElement("button");
+        btnClearGroup.className = "group-btn";
+        btnClearGroup.textContent = "Clear";
+        btnClearGroup.addEventListener("click", () => {
+          group.files.forEach((_, i) => {
+            selected.delete(`${hash}|${i}`);
+          });
+          updateStats();
+          renderList();
+        });
+
+        btns.appendChild(btnKeepOld);
+        btns.appendChild(btnKeepNew);
+        btns.appendChild(btnClearGroup);
+        header.appendChild(title);
+        header.appendChild(btns);
+        fileList.appendChild(header);
+
+        // Files in group
+        group.files.forEach((f, i) => {
+          const item = createFileItem(f, hash, i, i > 0);
+          fileList.appendChild(item);
+        });
+      });
+    }
+
+    function createFileItem(f, hash, index, isDup) {
+      const item = document.createElement("div");
+      item.className = "file-item";
+      if (isDup) item.classList.add("duplicate");
+      if (!isDup) item.classList.add("base");
+
+      const key = `${hash}|${index}`;
+
+      // Checkbox
+      const cbContainer = document.createElement("label");
+      cbContainer.className = "checkbox";
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = selected.has(key);
+      const checkIcon = document.createElement("span");
+      checkIcon.className = "check-icon";
+      checkIcon.textContent = "✓";
+      cbContainer.appendChild(checkbox);
+      cbContainer.appendChild(checkIcon);
+
+      checkbox.addEventListener("change", () => {
+        if (checkbox.checked) {
+          selected.add(key);
+        } else {
+          selected.delete(key);
+        }
+        updateStats();
+      });
+
+      item.appendChild(cbContainer);
+
+      // File info
+      const info = document.createElement("div");
+      info.className = "file-info";
+      const name = document.createElement("div");
+      name.className = "file-name";
+      name.textContent = f.name;
+      const path = document.createElement("div");
+      path.className = "file-path";
+      path.textContent = f.path || f.name;
+      info.appendChild(name);
+      info.appendChild(path);
+      item.appendChild(info);
+
+      // Tag
+      const tag = document.createElement("span");
+      tag.className = "file-tag";
+      if (isDup) {
+        tag.classList.add("dup");
+        tag.textContent = "duplicate";
+      } else {
+        tag.textContent = "base";
+      }
+      item.appendChild(tag);
+
+      // Delete button (only for duplicates)
+      if (isDup) {
+        const delBtn = document.createElement("button");
+        delBtn.className = "delete-btn";
+        delBtn.textContent = "Delete";
+        delBtn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          await deleteFile(f);
+        });
+        item.appendChild(delBtn);
+      }
+
+      return item;
+    }
+
+    async function deleteFile(f) {
+      try {
+        // Try using File System API (if available)
+        if (f.handle && typeof f.handle.remove === "function") {
+          await f.handle.remove();
+          logArea.textContent += `\n✓ Deleted: ${f.name}`;
+          return;
+        }
+
+        // Fallback: Try using deprecated FileSystemHandle API or request permission
+        if (f.webkitRelativePath && navigator.storage && navigator.storage.getDirectory) {
+          const root = await navigator.storage.getDirectory();
+          const parts = f.webkitRelativePath.split("/");
+          let current = root;
+
+          for (let i = 0; i < parts.length - 1; i++) {
+            current = await current.getDirectoryHandle(parts[i]);
+          }
+
+          const fileHandle = await current.getFileHandle(parts[parts.length - 1]);
+          await fileHandle.remove();
+          logArea.textContent += `\n✓ Deleted: ${f.name}`;
+          return;
+        }
+
+        // If none work, show message
+        logArea.textContent += `\n⚠ Cannot delete directly. Use manual deletion or backend API.`;
+      } catch (e) {
+        logArea.textContent += `\n✗ Error deleting ${f.name}: ${e.message}`;
+      }
+    }
+
+    async function scanFiles(files) {
+      allFiles = [];
+      hashMap.clear();
+      hashOrder = [];
+      selected.clear();
+
+      logArea.textContent = "Scanning files...";
+      const fileArray = Array.from(files);
+      let processed = 0;
+
+      for (const f of fileArray) {
+        const hash = await hashFile(f);
+        const path = f.webkitRelativePath || f.name;
+
+        if (!hashMap.has(hash)) {
+          hashMap.set(hash, { files: [], id: hashOrder.length });
+          hashOrder.push(hash);
+        }
+
+        hashMap.get(hash).files.push({
+          file: f,
+          name: f.name,
+          path: path,
+          size: f.size,
+          lastModified: f.lastModified,
+          handle: f.handle || null,
+          webkitRelativePath: f.webkitRelativePath,
+        });
+
+        allFiles.push(f);
+        processed++;
+
+        if (processed % 10 === 0) {
+          logArea.textContent = `Scanning... ${processed}/${fileArray.length}`;
+        }
+      }
+
+      updateStats();
+      renderList();
+
+      const dupGroups = hashOrder.filter((h) => hashMap.get(h).files.length > 1)
+        .length;
+      if (dupGroups === 0) {
+        logArea.textContent = `✓ Scan complete.\nNo duplicates found. (${allFiles.length} files)`;
+      } else {
+        logArea.textContent = `✓ Scan complete.\n${dupGroups} duplicate groups found.`;
+      }
+    }
+
+    fileInput.addEventListener("change", async (e) => {
+      if (e.target.files.length > 0) {
+        await scanFiles(e.target.files);
+      }
+    });
+
+    searchInput.addEventListener("input", renderList);
+
+    btnSelectAll.addEventListener("click", () => {
+      hashOrder.forEach((hash) => {
+        const group = hashMap.get(hash);
+        if (group.files.length > 1) {
+          group.files.forEach((_, i) => {
+            if (i > 0) {
+              selected.add(`${hash}|${i}`);
+            } else {
+              selected.delete(`${hash}|${i}`);
+            }
+          });
+        }
+      });
+      updateStats();
+      renderList();
+    });
+
+    btnClear.addEventListener("click", () => {
+      selected.clear();
+      updateStats();
+      renderList();
+    });
+
+    btnDelete.addEventListener("click", async () => {
+      if (selected.size === 0) {
+        logArea.textContent = "No files selected.";
+        return;
+      }
+
+      logArea.textContent = "Attempting to delete...\n";
+      const toDelete = [];
+
+      selected.forEach((key) => {
+        const [hash, indexStr] = key.split("|");
+        const index = parseInt(indexStr);
+        const group = hashMap.get(hash);
+        if (group && group.files[index]) {
+          toDelete.push(group.files[index]);
+        }
+      });
+
+      for (const f of toDelete) {
+        await deleteFile(f);
+      }
+
+      logArea.textContent += `\n\nDeletion complete. Refresh to confirm.`;
+    });
+  </script>
+</body>
+</html>

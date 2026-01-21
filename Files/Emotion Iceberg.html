@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotions Iceberg</title>
+    <style>
+        :root {
+            --color-bg-primary: #0a1628;
+            --color-text-primary: #e8eef7;
+            --color-text-secondary: #a0aec0;
+            --color-primary: #4da6d6;
+            --color-primary-hover: #6bb8e8;
+            --color-accent1: #2d5a7b;
+            --color-accent2: #1a3a52;
+            --color-accent3: #0f2339;
+            --color-layer1: rgba(77, 166, 214, 0.15);
+            --color-layer2: rgba(54, 130, 184, 0.12);
+            --color-layer3: rgba(37, 97, 145, 0.1);
+            --color-layer4: rgba(26, 58, 82, 0.08);
+            --color-layer5: rgba(15, 35, 57, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--color-bg-primary) 0%, #0f1f2e 100%);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, #7ec8f3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            color: var(--color-text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            font-style: italic;
+        }
+
+        /* Removed 2-column grid layout, changed to single centered column */
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            margin-top: 40px;
+            width: 100%;
+        }
+
+        .iceberg-section {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1200px;
+            align-items: center;
+        }
+
+        .index-section {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1200px;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-accent1);
+            padding-bottom: 15px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Removed max-height and overflow to display all content, centered */
+        .iceberg-visual {
+            background: linear-gradient(180deg, rgba(13, 27, 42, 0.6) 0%, rgba(10, 22, 40, 0.8) 100%);
+            border: 1px solid var(--color-accent1);
+            border-radius: 12px;
+            padding: 30px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .layer {
+            margin-bottom: 30px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .layer-header {
+            font-size: 1.1em;
+            font-weight: 700;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--color-primary);
+            width: 100%;
+            justify-content: center;
+        }
+
+        .layer-header:hover {
+            background: var(--color-accent1);
+            transform: translateX(5px);
+        }
+
+        .layer-1 {
+            background: var(--color-layer1);
+            color: #6bb8e8;
+        }
+
+        .layer-2 {
+            background: var(--color-layer2);
+            color: #5ba3d0;
+        }
+
+        .layer-3 {
+            background: var(--color-layer3);
+            color: #4a8ab8;
+        }
+
+        .layer-4 {
+            background: var(--color-layer4);
+            color: #3971a0;
+        }
+
+        .layer-5 {
+            background: var(--color-layer5);
+            color: #285888;
+        }
+
+        .layer-6, .layer-7, .layer-8, .layer-9, .layer-10 {
+            background: rgba(15, 35, 57, 0.04);
+            color: #1a4d6d;
+        }
+
+        .layer-depth-indicator {
+            font-size: 0.85em;
+            opacity: 0.7;
+            font-weight: 600;
+        }
+
+        .layer-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+            margin: 20px 0;
+            opacity: 0.5;
+            width: 100%;
+        }
+
+        /* Changed flex-direction from column to row with wrap for horizontal parts layout */
+        .parts {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            width: 100%;
+            margin-left: 0;
+        }
+
+        .part {
+            background: rgba(77, 166, 214, 0.08);
+            border-left: 3px solid var(--color-primary);
+            padding: 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+        }
+
+        .part:hover {
+            background: rgba(77, 166, 214, 0.15);
+            transform: translateX(5px);
+        }
+
+        .part-name {
+            font-weight: 600;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+            color: var(--color-primary);
+            text-align: center;
+        }
+
+        .items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .item {
+            background: var(--color-accent2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            cursor: help;
+            transition: all 0.3s ease;
+            border: 1px solid var(--color-accent1);
+            position: relative;
+        }
+
+        .item:hover {
+            background: var(--color-accent1);
+            border-color: var(--color-primary);
+            transform: scale(1.08);
+            color: var(--color-primary);
+        }
+
+        /* Removed max-height and overflow from index-list */
+        .index-list {
+            background: linear-gradient(180deg, rgba(13, 27, 42, 0.6) 0%, rgba(10, 22, 40, 0.8) 100%);
+            border: 1px solid var(--color-accent1);
+            border-radius: 12px;
+            padding: 30px;
+            width: 100%;
+        }
+
+        .index-item {
+            margin-bottom: 18px;
+            padding: 12px;
+            background: rgba(77, 166, 214, 0.05);
+            border-left: 3px solid var(--color-primary);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .index-item:hover {
+            background: rgba(77, 166, 214, 0.12);
+            transform: translateX(5px);
+        }
+
+        .index-item-name {
+            font-weight: 700;
+            color: var(--color-primary);
+            font-size: 0.95em;
+            margin-bottom: 4px;
+        }
+
+        .index-item-meaning {
+            color: var(--color-text-secondary);
+            font-size: 0.9em;
+            font-style: italic;
+            line-height: 1.5;
+        }
+
+        .index-layer-header {
+            font-size: 1.15em;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-top: 20px;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(77, 166, 214, 0.08);
+            border-left: 4px solid var(--color-primary);
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .search-box {
+            margin-bottom: 25px;
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 15px;
+            background: var(--color-accent2);
+            border: 1px solid var(--color-accent1);
+            border-radius: 6px;
+            color: var(--color-text-primary);
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            background: var(--color-accent1);
+            box-shadow: 0 0 10px rgba(77, 166, 214, 0.2);
+        }
+
+        .search-input::placeholder {
+            color: var(--color-text-secondary);
+        }
+
+        @media (max-width: 1024px) {
+            h1 {
+                font-size: 2.2em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .part {
+                min-width: 200px;
+                max-width: 250px;
+            }
+        }
+
+        .layer-toggle {
+            cursor: pointer;
+            user-select: none;
+            font-weight: 700;
+        }
+
+        .layer-toggle::before {
+            content: "▼";
+            display: inline-block;
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .layer.collapsed .layer-toggle::before {
+            transform: rotate(-90deg);
+        }
+
+        .layer.collapsed .parts {
+            display: none;
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .toggle-buttons {
+            display: flex;
+            gap: 15px;
+            background: var(--color-accent1);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--color-accent1);
+        }
+
+        .view-toggle {
+            padding: 10px 25px;
+            border: 2px solid var(--color-primary);
+            background: transparent;
+            color: var(--color-text-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .view-toggle:hover {
+            background: var(--color-primary);
+            color: #000;
+            transform: translateY(-2px);
+        }
+
+        .view-toggle.active {
+            background: var(--color-primary);
+            color: #000;
+            border-color: var(--color-primary-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌊 The Emotions Iceberg 🌊</h1>
+            <p class="subtitle">A descent through the layers of emotional life: from surface awareness to shadow depths, suppression, avoidance, and the hidden chambers of intimate truth.</p>
+        </header>
+
+        <div class="toggle-container">
+            <div class="toggle-buttons">
+                <button class="view-toggle active" data-view="iceberg">🌊 Visual Iceberg</button>
+                <button class="view-toggle" data-view="index">📋 Complete Index</button>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="iceberg-section" id="icebergSection" style="display: block;">
+                <h2 class="section-title">Visual Iceberg Structure</h2>
+                <div class="iceberg-visual" id="icebergVisual">
+                    <!-- Layers will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="index-section" id="indexSection" style="display: none;">
+                <h2 class="section-title">Complete Meanings Index</h2>
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search emotions...">
+                </div>
+                <div class="index-list" id="indexList">
+                    <!-- Index items will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Comprehensive emotional iceberg data structure with Polyvagal Theory, Attachment, and Shadow Work
+        const icebergData = [
+            {
+                layerName: "Surface - Everyday Expressions & Social Emotions",
+                layerDepth: "Layer 1",
+                parts: [
+                    {
+                        partName: "Basic Emotions & Social Signals",
+                        items: [
+                            { name: "Joy", meaning: "The effortless uplifting of the spirit when lightness meets being." },
+                            { name: "Sadness", meaning: "The weight of absence calling us to acknowledge loss." },
+                            { name: "Anger", meaning: "Energy demanding boundaries and recognition of violation." },
+                            { name: "Fear", meaning: "The compass pointing us away from perceived danger." },
+                            { name: "Surprise", meaning: "The momentary suspension when reality breaks expectation." },
+                            { name: "Disgust", meaning: "Instinctive recoil from what repels our sense of rightness." },
+                            { name: "Contentment", meaning: "The quiet satisfaction when nothing demands more." },
+                            { name: "Excitement", meaning: "The forward momentum of anticipation." },
+                            { name: "Smile", meaning: "The mask we offer as proof of acceptability." },
+                            { name: "Laughter", meaning: "Connection disguised as sound." }
+                        ]
+                    },
+                    {
+                        partName: "Relational & Self-Awareness",
+                        items: [
+                            { name: "Gratitude", meaning: "The recognition that good has been received." },
+                            { name: "Appreciation", meaning: "The valuing of another's presence or gift." },
+                            { name: "Care", meaning: "The active commitment to another's wellbeing." },
+                            { name: "Empathy", meaning: "The entering into another's emotional landscape." },
+                            { name: "Compassion", meaning: "The desire to ease another's suffering." },
+                            { name: "Self-Recognition", meaning: "The quiet act of naming what moves within." },
+                            { name: "Authenticity", meaning: "The alignment between inner truth and outer expression." },
+                            { name: "Confidence", meaning: "The faith in one's capacity to succeed." }
+                        ]
+                    },
+                    {
+                        partName: "Connection & Presence",
+                        items: [
+                            { name: "Warmth", meaning: "The radiance that signals safety to another." },
+                            { name: "Friendliness", meaning: "The invitation to approach without fear." },
+                            { name: "Openness", meaning: "The signal of receptivity to connection." },
+                            { name: "Attentive", meaning: "The presence that says you are seen." },
+                            { name: "Enthusiasm", meaning: "Permission to care visibly without shame." },
+                            { name: "Interest", meaning: "The pull toward engaging with what captivates." },
+                            { name: "Amusement", meaning: "The lightness found in shared humor and play." },
+                            { name: "Concern", meaning: "The worry born from mattering to someone." }
+                        ]
+                    },
+                    {
+                        partName: "Everyday States",
+                        items: [
+                            { name: "Frustration", meaning: "The static of wanting and not having." },
+                            { name: "Boredom", meaning: "The restlessness when meaning has temporarily fled." },
+                            { name: "Vulnerability", meaning: "The courage to let cracks show in the facade." },
+                            { name: "Humility", meaning: "The peace found in accepting limitation." },
+                            { name: "Pride", meaning: "The visibility of achievement without arrogance's bite." },
+                            { name: "Self-Doubt", meaning: "The whisper questioning one's worth and capability." },
+                            { name: "Polite", meaning: "The varnish we apply to authentic feeling." },
+                            { name: "Fondness", meaning: "The gentle affection toward those we know." }
+                        ]
+                    }
+                ]
+            },
+            {
+                layerName: "Ventral Vagal States - Safety, Connection & Co-Regulation",
+                layerDepth: "Layer 2",
+                parts: [
+                    {
+                        partName: "Neuroception of Safety & Peace",
+                        items: [
+                            { name: "Felt Safety", meaning: "The nervous system's recognition of absence of threat." },
+                            { name: "Calm Presence", meaning: "The serene steadiness that radiates from within." },
+                            { name: "Relaxation", meaning: "The release of muscular and nervous tension." },
+                            { name: "Peace", meaning: "The stillness beneath all agitation." },
+                            { name: "Serenity", meaning: "The untouched quietude of undisturbed waters." },
+                            { name: "Stillness", meaning: "The absence of unnecessary movement or urgency." },
+                            { name: "Grounding", meaning: "The felt connection to solid earth beneath." },
+                            { name: "Being Held", meaning: "The experience of secure containment." }
+                        ]
+                    },
+                    {
+                        partName: "Social Bonding & Attunement",
+                        items: [
+                            { name: "Mutual Recognition", meaning: "The sacred moment when souls acknowledge each other." },
+                            { name: "Emotional Resonance", meaning: "The harmony found when two hearts beat together." },
+                            { name: "Authentic Meeting", meaning: "The space where persona dissolves into truth." },
+                            { name: "Mirroring", meaning: "Being reflected back to yourself with compassion." },
+                            { name: "Attunement", meaning: "The synchronized tuning of two nervous systems." },
+                            { name: "Co-Regulation", meaning: "The nervous system soothed by another's calm presence." },
+                            { name: "Being Witnessed", meaning: "Having one's experience fully seen and validated." },
+                            { name: "Tender Connection", meaning: "The gentle touch of spirit meeting spirit." }
+                        ]
+                    },
+                    {
+                        partName: "Healing & Relational Core",
+                        items: [
+                            { name: "Repair After Rupture", meaning: "The healing that follows honest conflict." },
+                            { name: "Forgiveness", meaning: "The release of the right to punish." },
+                            { name: "Reconciliation", meaning: "The restoration of broken connection." },
+                            { name: "Understanding", meaning: "The grasping of another's inner logic." },
+                            { name: "Loneliness", meaning: "The ache of being unseen even among many." },
+                            { name: "Connection", meaning: "The brief dissolving of the boundary between selves." },
+                            { name: "Belonging", meaning: "The quiet certainty that one's existence is welcomed." },
+                            { name: "Intimacy", meaning: "The deepest sharing of self with another." }
+                        ]
+                    },
+                    {
+                        partName: "Trust, Attraction & Restoration",
+                        items: [
+                            { name: "Trust", meaning: "The belief that another will not betray us." },
+                            { name: "Attraction", meaning: "The magnetic pull toward what fascinates us." },
+                            { name: "Admiration", meaning: "The recognition of excellence in another." },
+                            { name: "Acceptance by Other", meaning: "Being chosen despite one's imperfection." },
+                            { name: "Unconditional Regard", meaning: "Being loved not for performance but being." },
+                            { name: "Restoration", meaning: "The return to wholeness after fragmentation." },
+                            { name: "Renewal", meaning: "The arising of new life from old ashes." },
+                            { name: "Homecoming", meaning: "The end of exile into safe belonging." }
+                        ]
+                    }
+                ]
+            },
+            {
+                layerName: "Dysregulation - Shutdown, Anxiety & Rage",
+                layerDepth: "Layer 3",
+                parts: [
+                    {
+                        partName: "Immobilization & Depression",
+                        items: [
+                            { name: "Dissociation", meaning: "The floating away from direct emotional experience." },
+                            { name: "Numbing", meaning: "The protective anesthesia of feeling nothing at all." },
+                            { name: "Freezing", meaning: "The paralysis when too much emotion demands release." },
+                            { name: "Shutdown", meaning: "Complete withdrawal from external engagement." },
+                            { name: "Collapse", meaning: "The body giving way under unbearable weight." },
+                            { name: "Depression", meaning: "The slowing and darkening when effort feels futile." },
+                            { name: "Hopelessness", meaning: "The conviction that nothing will ever improve." },
+                            { name: "Despair", meaning: "The abandonment of all expectation for relief." }
+                        ]
+                    },
+                    {
+                        partName: "Anxious Arousal & Abandonment Fear",
+                        items: [
+                            { name: "Anxiety", meaning: "The nervous anticipation of future harm." },
+                            { name: "Worry", meaning: "The mind spinning scenarios of what could go wrong." },
+                            { name: "Hypervigilance", meaning: "The exhausting surveillance for threat." },
+                            { name: "Fear of Abandonment", meaning: "The terror that everyone will leave." },
+                            { name: "Clinging Behaviors", meaning: "The grasping that pushes others away." },
+                            { name: "Restlessness", meaning: "The inability to settle into stillness." },
+                            { name: "Nervousness", meaning: "The tremor in the system before engagement." },
+                            { name: "Desperate Reaching", meaning: "The voice calling out from drowning depths." }
+                        ]
+                    },
+                    {
+                        partName: "Rage & Defensive Distance",
+                        items: [
+                            { name: "Rage", meaning: "The explosive overwhelming of all channels." },
+                            { name: "Fury", meaning: "The pure burning of violation." },
+                            { name: "Explosive Anger", meaning: "The sudden eruption of contained pressure." },
+                            { name: "Protective Anger", meaning: "The fierce defense of the vulnerable." },
+                            { name: "Emotional Distance", meaning: "Maintaining safety through the illusion of independence." },
+                            { name: "Deactivating Strategies", meaning: "The shutting down of emotional systems to survive." },
+                            { name: "Dismissiveness", meaning: "The minimizing of another's importance." },
+                            { name: "Contempt", meaning: "The hidden judgment that renders another worthless." }
+                        ]
+                    },
+                    {
+                        partName: "Apathy & Withdrawal",
+                        items: [
+                            { name: "Apathy", meaning: "The numbing indifference to what once mattered." },
+                            { name: "Loss of Interest", meaning: "The fading of curiosity and engagement." },
+                            { name: "Anhedonia", meaning: "The inability to experience pleasure in anything." },
+                            { name: "Resignation", meaning: "The acceptance that struggle is pointless." },
+                            { name: "Fatigue", meaning: "The exhaustion that pervades even rest." },
+                            { name: "Emptiness", meaning: "The hollow absence of feeling or meaning." },
+                            { name: "Tonic Immobility", meaning: "The ancient survival response of playing dead." },
+                            { name: "Immobilization", meaning: "The nervous system's freeze response to threat." }
+                        ]
+                    }
+                ]
+            },
+            {
+                layerName: "Suppression, Shadow & Unconscious Patterns",
+                layerDepth: "Layer 4",
+                parts: [
+                    {
+                        partName: "Active Suppression & Repression",
+                        items: [
+                            { name: "Expression Control", meaning: "The exhausting effort to keep the face unmoved." },
+                            { name: "Emotional Masking", meaning: "The wearing of acceptable expressions." },
+                            { name: "Facade Maintenance", meaning: "The constant work of appearing fine." },
+                            { name: "Mental Distraction", meaning: "The mind fleeing from what the heart knows." },
+                            { name: "Repression", meaning: "The unconscious banishment of unbearable feeling." },
+                            { name: "Compartmentalization", meaning: "Sealing off contradictions in separate chambers of self." },
+                            { name: "Amnesia Periods", meaning: "Missing time around traumatic experience." },
+                            { name: "Unconscious Blocking", meaning: "The mind's refusal to register what occurred." }
+                        ]
+                    },
+                    {
+                        partName: "Cultural Silencing & Trauma",
+                        items: [
+                            { name: "Gender-Enforced Suppression", meaning: "Emotions deemed incompatible with assigned gender." },
+                            { name: "Class-Based Silence", meaning: "The emotions deemed unbecoming of one's station." },
+                            { name: "Religious Repression", meaning: "Emotions labeled as sin or spiritual weakness." },
+                            { name: "Family Prohibition", meaning: "Specific feelings forbidden by familial law." },
+                            { name: "Racial Trauma Silence", meaning: "The pain of discrimination locked within." },
+                            { name: "Intergenerational Silencing", meaning: "The inherited law not to speak what was suffered." },
+                            { name: "Shame-Enforced Secrecy", meaning: "The binding silence born of family shame." },
+                            { name: "Loyalty-Enforced Silence", meaning: "Swallowing truth to protect the relationship." }
+                        ]
+                    },
+                    {
+                        partName: "Disowned Shadow & Forbidden Emotions",
+                        items: [
+                            { name: "Disowned Rage", meaning: "The fury we cannot admit exists within us." },
+                            { name: "Repressed Grief", meaning: "Sorrow so vast we dare not let it breathe." },
+                            { name: "Forbidden Desire", meaning: "Longing deemed unacceptable by the internalized parent." },
+                            { name: "Hidden Shame", meaning: "The belief of unworthiness buried so deep we've forgotten it." },
+                            { name: "Primal Fear", meaning: "The primordial terror beneath all other fears." },
+                            { name: "Guilt", meaning: "The weight of knowing we have caused harm." },
+                            { name: "Sadistic Impulse", meaning: "The unwelcome pleasure at another's pain." },
+                            { name: "Envious Hunger", meaning: "The desperate wanting of what another possesses." }
+                        ]
+                    },
+                    {
+                        partName: "Projection & Transference",
+                        items: [
+                            { name: "Projected Anger", meaning: "Our rage attributed to the external world." },
+                            { name: "Transferred Longing", meaning: "Hunger for one person poured into another." },
+                            { name: "Shadow Recognition", meaning: "Seeing in others what we cannot see in ourselves." },
+                            { name: "Blame Displacement", meaning: "Attributing our pain to external enemies." },
+                            { name: "Repetition Compulsion", meaning: "Recreating ancient wounds to gain mastery." },
+                            { name: "Transference", meaning: "Pouring past relationships into present ones." },
+                            { name: "Unconscious Envy", meaning: "The unacknowledged hunger for what another has." },
+                            { name: "Hidden Contempt", meaning: "The secret judgment toward those we serve." }
+                        ]
+                    }
+                ]
+            },
+            {
+                layerName: "Existential Avoidance & Relational Sabotage",
+                layerDepth: "Layer 5",
+                parts: [
+                    {
+                        partName: "Existential Escape & Temporal Avoidance",
+                        items: [
+                            { name: "Meaning Avoidance", meaning: "The refusal to ask if anything matters." },
+                            { name: "Authenticity Evasion", meaning: "The endless performing to avoid discovering self." },
+                            { name: "Choice Denial", meaning: "The pretense of having no agency in one's suffering." },
+                            { name: "Responsibility Deflection", meaning: "The claim that circumstance dictates all." },
+                            { name: "Future Denial", meaning: "The refusal to imagine or plan ahead." },
+                            { name: "Past Escape", meaning: "The constant fleeing from historical wounds." },
+                            { name: "Mortality Denial", meaning: "The pretense of infinite time remaining." },
+                            { name: "Present Dissociation", meaning: "The floating existence untethered from now." }
+                        ]
+                    },
+                    {
+                        partName: "Relational Sabotage & Testing",
+                        items: [
+                            { name: "Intimacy Avoidance", meaning: "The subtle push-away when closeness threatens." },
+                            { name: "Commitment Fear", meaning: "The panic at the loss of escape routes." },
+                            { name: "Emotional Infidelity", meaning: "Seeking feeling elsewhere to avoid it here." },
+                            { name: "Testing Others", meaning: "Creating crises to prove abandonment inevitable." },
+                            { name: "Self-Sabotage", meaning: "The unconscious destruction of good things." },
+                            { name: "Relationship Cycling", meaning: "The repetition of approach and withdrawal." },
+                            { name: "The Flight from Connection", meaning: "The nervous system's refusal of safety." },
+                            { name: "Counterdependency", meaning: "The fierce independence masking terror of reliance." }
+                        ]
+                    },
+                    {
+                        partName: "Defensive Behaviors & Distraction",
+                        items: [
+                            { name: "Isolation", meaning: "The chosen exile to avoid being truly known." },
+                            { name: "People Pleasing", meaning: "The erasure of self to keep others comfortable." },
+                            { name: "Deflection", meaning: "Turning another's wound into a mirror of their blame." },
+                            { name: "Charm as Defense", meaning: "Using magnetism to prevent genuine approach." },
+                            { name: "Workaholism", meaning: "Drowning authenticity in endless productivity." },
+                            { name: "Compulsive Busyness", meaning: "The frenetic motion that prevents arrival within." },
+                            { name: "Absorption in Distraction", meaning: "The drowning in activity to avoid the void." },
+                            { name: "Addiction Seeking", meaning: "The desperate grasp for chemical or behavioral escape." }
+                        ]
+                    },
+                    {
+                        partName: "Deeper Evasion & Enmeshment",
+                        items: [
+                            { name: "Emotional Enmeshment Escape", meaning: "Losing self to avoid abandonment." },
+                            { name: "Triangulation", meaning: "Using a third party to avoid direct emotional meeting." },
+                            { name: "Substance Numbing", meaning: "Using external agents to chemically evade self." },
+                            { name: "Legacy Avoidance", meaning: "Not thinking about what we leave behind." },
+                            { name: "Existential Numbness", meaning: "The refusal to feel life's fundamental truths." },
+                            { name: "Sleep Avoidance", meaning: "Using consciousness or its absence as shield." },
+                            { name: "Selectivity of Attention", meaning: "The tuning out of what threatens equilibrium." },
+                            { name: "Situational Escape", meaning: "Fleeing from places where feeling might surface." }
+                        ]
+                    }
+                ]
+            },
+            {
+                layerName: "Intimacy, Vulnerability & Authentic Connection",
+                layerDepth: "Layer 6",
+                parts: [
+                    {
+                        partName: "Intimate Exposure & Presence",
+                        items: [
+                            { name: "Being Fully Seen", meaning: "The terror and salvation of removing all masks." },
+                            { name: "Emotional Honesty", meaning: "Speaking the unspeakable truth of one's inner world." },
+                            { name: "Genuine Vulnerability", meaning: "The willingness to be hurt rather than defended." },
+                            { name: "Radical Trust", meaning: "The surrender of control to another's care." },
+                            { name: "Intimate Presence", meaning: "Two nervous systems finding safety in witness." },
+                            { name: "Sexual Vulnerability", meaning: "The nakedness that goes beyond physical form." },
+                            { name: "Opening the Heart", meaning: "The risk of letting another matter completely." },
+                            { name: "Embodied Presence", meaning: "The aliveness felt when fully inhabiting the body." }
+                        ]
+                    },
+                    {
+                        partName: "Relational Depth & Mutual Recognition",
+                        items: [
+                            { name: "Safe Harbor", meaning: "The presence that says 'you are not alone in this.'" },
+                            { name: "Mutual Recognition", meaning: "The sacred moment when souls acknowledge each other." },
+                            { name: "Emotional Resonance", meaning: "The harmony found when two hearts beat together." },
+                            { name: "Authentic Meeting", meaning: "The space where persona dissolves into truth." },
+                            { name: "Mirroring", meaning: "Being reflected back to yourself with compassion." },
+                            { name: "Felt Unconditional Regard", meaning: "Being loved not for performance but being." },
+                            { name: "Shared Emotional Space", meaning: "The dissolving of separate psychological territories." },
+                            { name: "Witness to Becoming", meaning: "The honor of watching another's transformation." }
+                        ]
+                    },
+                    {
+                        partName: "Healing, Repair & Restoration",
+                        items: [
+                            { name: "Repair After Rupture", meaning: "The healing that follows honest conflict." },
+                            { name: "Forgiveness", meaning: "The release of the right to punish." },
+                            { name: "Reconciliation", meaning: "The restoration of broken connection." },
+                            { name: "Understanding", meaning: "The grasping of another's inner logic." },
+                            { name: "Acceptance by Other", meaning: "Being chosen despite one's imperfection." },
+                            { name: "Healing Presence", meaning: "The medicine found in another's calm attention." },
+                            { name: "Restoration", meaning: "The return to wholeness after fragmentation." },
+                            { name: "Renewal", meaning: "The arising of new life from old ashes." }
+                        ]
+                    },
+                    {
+                        partName: "Deep Belonging & Integration",
+                        items: [
+                            { name: "Being Witnessed", meaning: "Having one's experience fully seen and validated." },
+                            { name: "Seen & Known", meaning: "The simultaneous recognition of inner and outer self." },
+                            { name: "Mutual Vulnerability", meaning: "Two people removing armor together." },
+                            { name: "Tender Connection", meaning: "The gentle touch of spirit meeting spirit." },
+                            { name: "Homecoming", meaning: "The end of exile into safe belonging." },
+                            { name: "Attunement", meaning: "The synchronized tuning of two nervous systems." },
+                            { name: "Co-Regulation", meaning: "The nervous system soothed by another's calm presence." },
+                            { name: "True Belonging", meaning: "The knowing that you are wanted exactly as you are." }
+                        ]
+                    }
+                ]
+            },
+            {
+                layerName: "Archetypal, Collective & Shadow Integration",
+                layerDepth: "Layer 7",
+                parts: [
+                    {
+                        partName: "Archetypal Emotional Patterns",
+                        items: [
+                            { name: "The Hero's Fear", meaning: "The trembling beneath every act of courage." },
+                            { name: "The Lover's Ache", meaning: "The eternal longing to merge with the beloved." },
+                            { name: "The Shadow's Hunger", meaning: "The primal appetite denied by civilized self." },
+                            { name: "The Caregiver's Depletion", meaning: "The slow emptying that comes from endless giving." },
+                            { name: "The Sage's Isolation", meaning: "The loneliness of understanding too much." },
+                            { name: "The Innocent's Naivety", meaning: "The willful blindness to protect hope." },
+                            { name: "The Creator's Torment", meaning: "The agony of bringing new things into being." },
+                            { name: "The Ruler's Burden", meaning: "The weight of maintaining control and order." }
+                        ]
+                    },
+                    {
+                        partName: "Collective Trauma & Existential Depths",
+                        items: [
+                            { name: "Existential Dread", meaning: "The awareness of finitude and meaninglessness." },
+                            { name: "Ontological Anxiety", meaning: "The vertigo of questioning what is real." },
+                            { name: "Collective Shame", meaning: "The inherited wound of family and culture." },
+                            { name: "Ancestral Grief", meaning: "The sorrow of generations echoing in blood." },
+                            { name: "Cultural Trauma", meaning: "The wounding passed through generations." },
+                            { name: "Civilizational Despair", meaning: "The knowledge that systems are collapsing." },
+                            { name: "Numinous Awe", meaning: "The trembling before the sacred unknown." },
+                            { name: "Cosmic Loneliness", meaning: "The solitude of consciousness in vast indifference." }
+                        ]
+                    },
+                    {
+                        partName: "The Darkest Truths & Shadow Recognition",
+                        items: [
+                            { name: "Capacity for Cruelty", meaning: "The recognition that we too can inflict harm." },
+                            { name: "Hidden Selfishness", meaning: "The self-preservation instinct that betrays others." },
+                            { name: "Unconscious Hatred", meaning: "The malice toward self and other dwelling unnamed." },
+                            { name: "Mortality Awareness", meaning: "The felt knowledge that all things dissolve." },
+                            { name: "Void Recognition", meaning: "The understanding that meaning must be created, not found." },
+                            { name: "Survivor's Guilt", meaning: "The shame of living when others have not." },
+                            { name: "Unwanted Pleasure", meaning: "The thrills we hate ourselves for experiencing." },
+                            { name: "Accepting Duality", meaning: "The peace found in holding contradictions." }
+                        ]
+                    },
+                    {
+                        partName: "Shadow Integration & Dark Wisdom",
+                        items: [
+                            { name: "Integrating Darkness", meaning: "Making allies of the parts we feared." },
+                            { name: "Shadow as Compass", meaning: "Rejected feelings as guides to lost wholeness." },
+                            { name: "Dark Wisdom", meaning: "The knowledge earned only through facing abyss." },
+                            { name: "Embracing Ambiguity", meaning: "The surrender of clear moral categories." },
+                            { name: "Self-Compassion for Shadow", meaning: "The radical acceptance of one's darkness." },
+                            { name: "Reclaiming Rejected Power", meaning: "The strength we disowned to please others." },
+                            { name: "Honoring Destructive Impulses", meaning: "The recognition that destruction sometimes creates." },
+                            { name: "Wholeness Through Acceptance", meaning: "The paradox of healing by embracing all." }
+                        ]
+                    }
+                ]
+            },
+            {
+                layerName: "Primal Essence, Pre-Verbal Memory & Mythic Depths",
+                layerDepth: "Layer 8",
+                parts: [
+                    {
+                        partName: "Core Human Truths & Transcendence",
+                        items: [
+                            { name: "Original Loneliness", meaning: "The fundamental separateness of each consciousness." },
+                            { name: "Infinite Vulnerability", meaning: "The ultimate defenselessness of being alive." },
+                            { name: "The Need to Matter", meaning: "The desperate hunger for significance in vastness." },
+                            { name: "Transcendent Connection", meaning: "The longing to dissolve separation into unity." },
+                            { name: "Authentic Being", meaning: "The still voice beneath all performance and fear." },
+                            { name: "The Terror of Freedom", meaning: "The abyss of choice offered without guarantee." },
+                            { name: "Embodied Presence", meaning: "The aliveness felt when fully inhabiting the body." },
+                            { name: "The Sacred Ordinary", meaning: "The numinous found in the everyday and mundane." }
+                        ]
+                    },
+                    {
+                        partName: "Somatic, Cellular & Transgenerational Memory",
+                        items: [
+                            { name: "Wordless Knowing", meaning: "Understanding that precedes and transcends language." },
+                            { name: "Somatic Memory", meaning: "The body's ancient knowing encoded in every cell." },
+                            { name: "Primal Safety", meaning: "The ancient memory of being held and protected." },
+                            { name: "Instinctive Knowing", meaning: "The body speaking truths the mind denies." },
+                            { name: "Breath as Emotion", meaning: "The rhythm of inhale and exhale as feeling itself." },
+                            { name: "Cellular Memory", meaning: "The trauma and joy recorded in tissues themselves." },
+                            { name: "Inherited Trauma", meaning: "The wounds of ancestors living in our nervous systems." },
+                            { name: "Ancestral Resilience", meaning: "The strength encoded in survival's aftermath." }
+                        ]
+                    },
+                    {
+                        partName: "Mythic Archetypes & Encounters",
+                        items: [
+                            { name: "The Wise One's Knowing", meaning: "The elder within who sees all with compassion." },
+                            { name: "The Trickster's Chaos", meaning: "The unsettling force that breaks certainty." },
+                            { name: "The Lover's Merging", meaning: "The desire to dissolve boundaries entirely." },
+                            { name: "The Hero's Stand", meaning: "The courage to face what would destroy lesser beings." },
+                            { name: "The Innocent's Wonder", meaning: "The capacity to experience newness always." },
+                            { name: "Titanic Struggle", meaning: "The feeling of battling forces beyond human scale." },
+                            { name: "Heroic Despair", meaning: "The sorrow of fighting a losing battle anyway." },
+                            { name: "Mythic Longing", meaning: "The ache for union with something transcendent." }
+                        ]
+                    },
+                    {
+                        partName: "Beyond Language & Transcendent States",
+                        items: [
+                            { name: "Presence Beyond Feeling", meaning: "The peace that comes after all emotion has been felt." },
+                            { name: "Compassionate Acceptance", meaning: "The embrace of all that is, including suffering." },
+                            { name: "Proprioceptive Awareness", meaning: "The knowing of where self ends and world begins." },
+                            { name: "Epigenetic Emotion", meaning: "The feeling passed through genetic expression." },
+                            { name: "Familial Patterns", meaning: "The repetition of emotional scripts across generations." },
+                            { name: "Pre-Symbolic Dread", meaning: "Terror that predates the capacity to name it." },
+                            { name: "Non-Feeling", meaning: "The state where emotion itself has been transcended." },
+                            { name: "Evolutionary Urgency", meaning: "The pull toward becoming more than we are." }
+                        ]
+                    }
+                ]
+            },
+            {
+                layerName: "The Void, Ground of Being & Ultimate Integration",
+                layerDepth: "Layer 9",
+                parts: [
+                    {
+                        partName: "Encounters with Emptiness & Nothingness",
+                        items: [
+                            { name: "The Void Feeling", meaning: "The sense of absolute absence within the self." },
+                            { name: "Meaninglessness", meaning: "The recognition that nothing ultimately matters." },
+                            { name: "Ego Death", meaning: "The dissolution of the self you thought you were." },
+                            { name: "Absolute Isolation", meaning: "The radical aloneness at the core of existence." },
+                            { name: "Cosmic Insignificance", meaning: "The feeling of being dust in an uncaring universe." },
+                            { name: "The Silence", meaning: "The endless quiet where all voices cease." },
+                            { name: "Void-Gazing", meaning: "The courageous stare into total nothingness." },
+                            { name: "Non-Feeling", meaning: "The state where emotion itself has been transcended." }
+                        ]
+                    },
+                    {
+                        partName: "Transcendent Acceptance & Integration",
+                        items: [
+                            { name: "Unconditional Being", meaning: "Existing without apology or explanation needed." },
+                            { name: "The Peace of Surrender", meaning: "The relief found in ceasing to resist." },
+                            { name: "Complete Acceptance", meaning: "The yes to all that is, including all suffering." },
+                            { name: "Unity Consciousness", meaning: "The felt sense of separation dissolving." },
+                            { name: "Sacred Ordinariness", meaning: "The profound wonder of simply being alive." },
+                            { name: "Presence Itself", meaning: "The awareness that underlies all experience." },
+                            { name: "The Witnessing Stillness", meaning: "The consciousness that observes without judgment." },
+                            { name: "Being Before Feeling", meaning: "The substrate upon which all emotion arises." }
+                        ]
+                    },
+                    {
+                        partName: "The Silent Ground & Source",
+                        items: [
+                            { name: "The Source", meaning: "The mysterious origin of all emotional arising." },
+                            { name: "Pre-Symbolic Knowing", meaning: "Understanding that transcends all language and form." },
+                            { name: "The Ground of All Being", meaning: "The foundational reality beneath existence itself." },
+                            { name: "Infinite Compassion", meaning: "The boundless acceptance of all suffering and joy." },
+                            { name: "The Eternal Return", meaning: "The cycling acceptance of all that comes and goes." },
+                            { name: "Radical Forgiveness", meaning: "The absolute dissolution of all grievance and blame." },
+                            { name: "Holy Indifference", meaning: "The peace of releasing attachment to outcome." },
+                            { name: "The Eternal Now", meaning: "The timeless presence beyond past and future." }
+                        ]
+                    },
+                    {
+                        partName: "Integration of All Depths",
+                        items: [
+                            { name: "Wholeness", meaning: "The healing integration of all emotional territories." },
+                            { name: "Holy Paradox", meaning: "The simultaneous truth of opposites held as one." },
+                            { name: "The Mystery Embraced", meaning: "The acceptance of what can never be fully known." },
+                            { name: "Sacred Vulnerability", meaning: "The strength found in absolute openness." },
+                            { name: "Compassionate Witness", meaning: "The stance of loving observation without judgment." },
+                            { name: "The Dance of Light & Dark", meaning: "The eternal play of all emotional polarities." },
+                            { name: "Transcendent Aloneness", meaning: "The paradox of being utterly alone and fully connected." },
+                            { name: "The Home Within", meaning: "The arrival at the deepest sanctuary of self." }
+                        ]
+                    }
+                ]
+            },
+            {
+                layerName: "Psychological Unconscious - Archetypal & Collective Depths",
+                layerDepth: "Layer 10",
+                parts: [
+                    {
+                        partName: "Archetypal Emotional Patterns",
+                        items: [
+                            { name: "The Hero's Fear", meaning: "The trembling beneath every act of courage." },
+                            { name: "The Lover's Ache", meaning: "The eternal longing to merge with the beloved." },
+                            { name: "The Shadow's Hunger", meaning: "The primal appetite denied by civilized self." },
+                            { name: "The Caregiver's Depletion", meaning: "The slow emptying that comes from endless giving." },
+                            { name: "The Sage's Isolation", meaning: "The loneliness of understanding too much." },
+                            { name: "The Innocent's Naivety", meaning: "The willful blindness to protect hope." },
+                            { name: "The Creator's Torment", meaning: "The agony of bringing new things into being." }
+                        ]
+                    },
+                    {
+                        partName: "Collective Emotional Patterns",
+                        items: [
+                            { name: "Existential Dread", meaning: "The awareness of finitude and meaninglessness." },
+                            { name: "Ontological Anxiety", meaning: "The vertigo of questioning what is real." },
+                            { name: "Collective Shame", meaning: "The inherited wound of family and culture." },
+                            { name: "Ancestral Grief", meaning: "The sorrow of generations echoing in blood." },
+                            { name: "Cultural Trauma", meaning: "The wounding passed through generations." },
+                            { name: "Civilizational Despair", meaning: "The knowledge that systems are collapsing." }
+                        ]
+                    },
+                    {
+                        partName: "Transpersonal Emotions",
+                        items: [
+                            { name: "Numinous Awe", meaning: "The trembling before the sacred unknown." },
+                            { name: "Cosmic Loneliness", meaning: "The solitude of consciousness in vast indifference." },
+                            { name: "Evolutionary Urgency", meaning: "The pull toward becoming more than we are." }
+                        ]
+                    }
+                ]
+            },
+        ];
+
+        // Flatten data for search and index
+        let allItems = [];
+        icebergData.forEach((layer, layerIdx) => {
+            layer.parts.forEach((part, partIdx) => {
+                part.items.forEach((item, itemIdx) => {
+                    allItems.push({
+                        ...item,
+                        layer: layer.layerName,
+                        layerDepth: layer.layerDepth,
+                        part: part.partName
+                    });
+                });
+            });
+        });
+
+        // Populate iceberg visual
+        const icebergVisual = document.getElementById('icebergVisual');
+        icebergData.forEach((layer, layerIdx) => {
+            const layerDiv = document.createElement('div');
+            layerDiv.className = 'layer';
+            layerDiv.innerHTML = `
+                <div class="layer-header layer-${layerIdx + 1}">
+                    <span class="layer-toggle">${layer.layerName}</span>
+                    <span class="layer-depth-indicator">${layer.layerDepth}</span>
+                </div>
+                <div class="parts">
+                    ${layer.parts.map(part => `
+                        <div class="part">
+                            <div class="part-name">${part.partName}</div>
+                            <div class="items">
+                                ${part.items.map(item => `
+                                    <div class="item" title="${item.meaning}">${item.name}</div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            icebergVisual.appendChild(layerDiv);
+
+            // Add collapse/expand functionality
+            const header = layerDiv.querySelector('.layer-header');
+            header.addEventListener('click', () => {
+                layerDiv.classList.toggle('collapsed');
+            });
+        });
+
+        // Populate index
+        const indexList = document.getElementById('indexList');
+        const displayItems = (items) => {
+            let html = '';
+            let currentLayer = '';
+            
+            items.forEach(item => {
+                if (item.layer !== currentLayer) {
+                    if (currentLayer !== '') {
+                        html += '<div class="layer-divider"></div>';
+                    }
+                    html += `<div class="index-layer-header">${item.layer}</div>`;
+                    currentLayer = item.layer;
+                }
+                html += `
+                    <div class="index-item">
+                        <div class="index-item-name">${item.name}</div>
+                        <div class="index-item-meaning">${item.meaning}</div>
+                    </div>
+                `;
+            });
+            
+            indexList.innerHTML = html;
+        };
+        displayItems(allItems);
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = allItems.filter(item => 
+                item.name.toLowerCase().includes(query) ||
+                item.meaning.toLowerCase().includes(query)
+            );
+            displayItems(filtered);
+        });
+
+        // Toggle view functionality
+        const viewToggles = document.querySelectorAll('.view-toggle');
+        const icebergSection = document.getElementById('icebergSection');
+        const indexSection = document.getElementById('indexSection');
+
+        viewToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                viewToggles.forEach(t => t.classList.remove('active'));
+                toggle.classList.add('active');
+
+                if (toggle.dataset.view === 'iceberg') {
+                    icebergSection.style.display = 'block';
+                    indexSection.style.display = 'none';
+                } else if (toggle.dataset.view === 'index') {
+                    icebergSection.style.display = 'none';
+                    indexSection.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

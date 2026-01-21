@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Folder Flattener</title>
+
+  <link rel="icon" href="https://raw.githubusercontent.com/Runarok/GenAI-plus/main/GenAI-plus.png" type="image/png" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: radial-gradient(circle at top, #020617 0, #000 55%);
+      --glass-bg: rgba(15, 23, 42, 0.35);
+      --glass-border: rgba(148, 163, 184, 0.45);
+      --accent: #4f46e5;
+      --accent-soft: rgba(79, 70, 229, 0.25);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --danger: #f87272;
+      --success: #22c55e;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --shadow-soft: 0 24px 50px rgba(0, 0, 0, 0.75);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      padding: 16px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 980px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.8fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 800px) {
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .glass {
+      position: relative;
+      border-radius: var(--radius-lg);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-soft);
+      padding: 18px 18px 14px;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px); /* Safari */ /* [web:28][web:29][web:34] */
+    }
+
+    .glass::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(79, 70, 229, 0.16), transparent 55%);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .glass-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .chip {
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 4px 8px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.5);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .chip-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--success);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 12px 0 14px;
+    }
+
+    button {
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+      white-space: nowrap;
+      background: transparent;
+      color: var(--text-main);
+      transition:
+        background 0.16s ease,
+        color 0.16s ease,
+        box-shadow 0.16s ease,
+        transform 0.1s ease,
+        border-color 0.16s ease;
+    }
+
+    button:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.6), 0 0 0 8px rgba(148, 163, 184, 0.28);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.92), rgba(96, 165, 250, 0.9));
+      border: 1px solid rgba(129, 140, 248, 0.9);
+      box-shadow: 0 16px 40px rgba(79, 70, 229, 0.7);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 20px 50px rgba(79, 70, 229, 0.9);
+    }
+
+    .btn-secondary {
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: var(--text-muted);
+    }
+
+    .btn-secondary:hover {
+      color: var(--text-main);
+      transform: translateY(-1px);
+      border-color: rgba(148, 163, 184, 0.9);
+    }
+
+    .btn-icon {
+      font-size: 16px;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .option-label input {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--accent);
+    }
+
+    .option-label span {
+      font-size: 12px;
+    }
+
+    .option-hint {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .meta-pill {
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(15, 23, 42, 0.55);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta-pill strong {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(148, 163, 184, 0.15);
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #64748b;
+      box-shadow: 0 0 0 4px rgba(148, 163, 184, 0.35);
+    }
+
+    .status-text {
+      max-width: 260px;
+    }
+
+    .status-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .progress-shell {
+      width: 80px;
+      height: 3px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #22c55e, #a3e635);
+      transition: width 0.18s ease;
+    }
+
+    .log-card {
+      border-radius: var(--radius-lg);
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      box-shadow: var(--shadow-soft);
+      padding: 14px 14px 12px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .log-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .log-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .log-title h2 {
+      margin: 0;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #cbd5f5;
+    }
+
+    .log-title span {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .log-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .log-actions button {
+      font-size: 11px;
+      padding: 4px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.6);
+      box-shadow: none;
+      color: var(--text-muted);
+    }
+
+    .log-actions button:hover {
+      color: var(--text-main);
+      border-color: rgba(148, 163, 184, 0.9);
+    }
+
+    pre {
+      margin: 0;
+      margin-top: 4px;
+      background: linear-gradient(to bottom, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.98));
+      color: #a5f3fc;
+      padding: 9px 10px;
+      height: 310px;
+      overflow: auto;
+      font-size: 12px;
+      line-height: 1.4;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(30, 64, 175, 0.6);
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+      position: relative;
+    }
+
+    pre::before {
+      content: "session.log";
+      position: absolute;
+      top: 3px;
+      right: 10px;
+      font-size: 10px;
+      color: rgba(148, 163, 184, 0.7);
+    }
+
+    .log-line {
+      display: block;
+      white-space: pre;
+    }
+
+    .log-line.info {
+      color: #93c5fd;
+    }
+
+    .log-line.success {
+      color: #86efac;
+    }
+
+    .log-line.warn {
+      color: #fde68a;
+    }
+
+    .log-line.error {
+      color: #fecaca;
+    }
+
+    .log-line.muted {
+      color: #6b7280;
+    }
+
+    ::selection {
+      background: rgba(129, 140, 248, 0.4);
+      color: #f9fafb;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <!-- Controls / Status -->
+    <section class="glass">
+      <div class="glass-inner">
+        <header class="header">
+          <div class="title-block">
+            <h1>Folder Flattener</h1>
+            <p class="subtitle">Flatten nested folders into a single clean directory.</p>
+          </div>
+          <div class="chip">
+            <span class="chip-dot"></span>
+            File System Access
+          </div>
+        </header>
+
+        <div class="actions">
+          <button id="start" class="btn-primary">
+            <span class="btn-icon">📂</span>
+            <span>Flatten folder</span>
+          </button>
+          <button id="simulate" class="btn-secondary" type="button">
+            <span class="btn-icon">👁️</span>
+            <span>Dry run</span>
+          </button>
+        </div>
+
+        <div class="options">
+          <div class="option-row">
+            <label class="option-label">
+              <input type="checkbox" id="skipRootFiles" checked />
+              <span>Skip files already in root</span>
+            </label>
+            <span class="option-hint">Prevents touching existing top-level files.</span>
+          </div>
+
+          <div class="option-row">
+            <label class="option-label">
+              <input type="checkbox" id="deleteEmptyFolders" checked />
+              <span>Delete emptied folders</span>
+            </label>
+            <span class="option-hint">Remove folders once they no longer hold files.</span>
+          </div>
+
+          <div class="option-row">
+            <label class="option-label">
+              <input type="checkbox" id="previewMode" />
+              <span>Ask before moving</span>
+            </label>
+            <span class="option-hint">Show a summary, then confirm.</span>
+          </div>
+        </div>
+
+        <div class="meta-row">
+          <div class="meta-pill">
+            Last run: <strong id="metricLastRun">—</strong>
+          </div>
+          <div class="meta-pill">
+            Moved: <strong id="metricFilesMoved">0</strong>
+          </div>
+          <div class="meta-pill">
+            Folders cleaned: <strong id="metricFoldersDeleted">0</strong>
+          </div>
+        </div>
+
+        <div class="status">
+          <div class="status-left">
+            <div class="status-badge">
+              <span class="status-dot" id="statusDot"></span>
+              <span id="statusLabel">Idle</span>
+            </div>
+            <span class="status-text" id="statusText">
+              Ready. Pick a folder to start.
+            </span>
+          </div>
+          <div class="status-right">
+            <div class="progress-shell">
+              <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <span id="progressLabel">0%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Log -->
+    <section class="log-card">
+      <div class="log-header">
+        <div class="log-title">
+          <h2>Log</h2>
+          <span>Live details of each run.</span>
+        </div>
+        <div class="log-actions">
+          <button id="copyLog" type="button">Copy</button>
+          <button id="clearLog" type="button">Clear</button>
+        </div>
+      </div>
+      <pre id="log" aria-live="polite"></pre>
+    </section>
+  </main>
+
+  <script>
+    const logEl = document.getElementById("log");
+    const statusDot = document.getElementById("statusDot");
+    const statusLabel = document.getElementById("statusLabel");
+    const statusText = document.getElementById("statusText");
+    const progressBar = document.getElementById("progressBar");
+    const progressLabel = document.getElementById("progressLabel");
+    const metricLastRun = document.getElementById("metricLastRun");
+    const metricFilesMoved = document.getElementById("metricFilesMoved");
+    const metricFoldersDeleted = document.getElementById("metricFoldersDeleted");
+
+    const startBtn = document.getElementById("start");
+    const simulateBtn = document.getElementById("simulate");
+    const copyLogBtn = document.getElementById("copyLog");
+    const clearLogBtn = document.getElementById("clearLog");
+
+    const skipRootFilesEl = document.getElementById("skipRootFiles");
+    const deleteEmptyFoldersEl = document.getElementById("deleteEmptyFolders");
+    const previewModeEl = document.getElementById("previewMode");
+
+    let isRunning = false;
+    let lastRunSummary = null;
+
+    function appendLog(message, level = "info") {
+      const line = document.createElement("span");
+      line.className = "log-line " + level;
+      const time = new Date().toLocaleTimeString();
+      line.textContent = "[" + time + "] " + message;
+      logEl.appendChild(line);
+      logEl.appendChild(document.createTextNode("\n"));
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function setStatus(label, text, mode = "idle") {
+      statusLabel.textContent = label;
+      statusText.textContent = text;
+
+      let color = "#64748b";
+      let glow = "rgba(148, 163, 184, 0.4)";
+
+      if (mode === "running") {
+        color = "#22c55e";
+        glow = "rgba(34, 197, 94, 0.45)";
+      } else if (mode === "warning") {
+        color = "#eab308";
+        glow = "rgba(234, 179, 8, 0.45)";
+      } else if (mode === "error") {
+        color = "#f97373";
+        glow = "rgba(239, 68, 68, 0.55)";
+      }
+
+      statusDot.style.background = color;
+      statusDot.style.boxShadow = "0 0 0 4px " + glow;
+    }
+
+    function setProgress(current, total) {
+      let percent = 0;
+      if (total > 0) {
+        percent = Math.round((current / total) * 100);
+      }
+      percent = Math.min(100, Math.max(0, percent));
+      progressBar.style.width = percent + "%";
+      progressLabel.textContent = percent + "%";
+    }
+
+    function formatNow() {
+      const d = new Date();
+      return (
+        d.getHours().toString().padStart(2, "0") +
+        ":" +
+        d.getMinutes().toString().padStart(2, "0")
+      );
+    }
+
+    async function flatten(rootDir, { dryRun = false } = {}) {
+      const deleteEmpty = deleteEmptyFoldersEl.checked;
+      const skipRootFiles = skipRootFilesEl.checked;
+
+      isRunning = true;
+      setStatus(
+        dryRun ? "Dry run" : "Flattening",
+        dryRun
+          ? "Scanning structure without moving files…"
+          : "Moving files into the root folder…",
+        "running"
+      );
+      appendLog(
+        (dryRun ? "Dry run" : "Run") +
+          " started (skipRootFiles=" +
+          (skipRootFiles ? "yes" : "no") +
+          ", deleteEmptyFolders=" +
+          (deleteEmpty ? "yes" : "no") +
+          ").",
+        "muted"
+      );
+
+      const summary = {
+        totalFiles: 0,
+        movedFiles: 0,
+        skippedFiles: 0,
+        renamedFiles: 0,
+        deletedFolders: 0,
+      };
+
+      async function countEntries(dir, depth) {
+        let count = 0;
+        for await (const entry of dir.values()) {
+          if (entry.kind === "directory") {
+            count += await countEntries(entry, depth + 1);
+          } else {
+            if (skipRootFiles && depth === 0) continue;
+            count++;
+          }
+        }
+        return count;
+      }
+
+      const totalFiles = await countEntries(rootDir, 0);
+      summary.totalFiles = totalFiles;
+
+      if (totalFiles === 0) {
+        appendLog("No files found to move.", "warn");
+        setStatus("Nothing to do", "No eligible files in this folder.", "warning");
+        setProgress(0, 1);
+        isRunning = false;
+        return summary;
+      }
+
+      let processed = 0;
+
+      async function handleFile(fileHandle, dry) {
+        const originalName = fileHandle.name;
+        let targetName = originalName;
+        let counter = 1;
+        let renamed = false;
+
+        while (true) {
+          try {
+            await rootDir.getFileHandle(targetName);
+            const dot = originalName.lastIndexOf(".");
+            const base = dot === -1 ? originalName : originalName.slice(0, dot);
+            const ext = dot === -1 ? "" : originalName.slice(dot);
+            targetName = base + "_" + counter + ext;
+            counter++;
+            renamed = true;
+          } catch {
+            break;
+          }
+        }
+
+        if (dry) {
+          appendLog(
+            "Will move: " +
+              originalName +
+              " → " +
+              targetName +
+              (renamed ? " (rename to avoid overwrite)" : ""),
+            renamed ? "warn" : "info"
+          );
+          summary.movedFiles++;
+          if (renamed) summary.renamedFiles++;
+          return;
+        }
+
+        const file = await fileHandle.getFile();
+        const newHandle = await rootDir.getFileHandle(targetName, { create: true });
+        const writable = await newHandle.createWritable();
+        await writable.write(await file.arrayBuffer());
+        await writable.close();
+        await fileHandle.remove();
+
+        appendLog(
+          "Moved: " +
+            originalName +
+            " → " +
+            targetName +
+            (renamed ? " (renamed to avoid overwrite)" : ""),
+          "success"
+        );
+        summary.movedFiles++;
+        if (renamed) summary.renamedFiles++;
+      }
+
+      async function walk(dir, depth) {
+        for await (const entry of dir.values()) {
+          if (entry.kind === "directory") {
+            await walk(entry, depth + 1);
+
+            if (deleteEmpty && depth >= 0 && dir !== rootDir) {
+              let empty = true;
+              for await (const _ of entry.values()) {
+                empty = false;
+                break;
+              }
+              if (empty) {
+                if (!dryRun) {
+                  await entry.remove();
+                }
+                summary.deletedFolders++;
+                appendLog("Deleted empty folder: " + entry.name, "success");
+              }
+            }
+          } else {
+            if (skipRootFiles && dir === rootDir) {
+              summary.skippedFiles++;
+              processed++;
+              setProgress(processed, totalFiles);
+              continue;
+            }
+            await handleFile(entry, dryRun);
+            processed++;
+            setProgress(processed, totalFiles);
+          }
+        }
+      }
+
+      await walk(rootDir, 0);
+
+      lastRunSummary = summary;
+      metricLastRun.textContent = formatNow();
+      metricFilesMoved.textContent = String(summary.movedFiles);
+      metricFoldersDeleted.textContent = String(summary.deletedFolders);
+
+      if (dryRun) {
+        setStatus(
+          "Dry run done",
+          "Found " +
+            summary.totalFiles +
+            " files. " +
+            summary.movedFiles +
+            " would move, " +
+            summary.renamedFiles +
+            " would rename.",
+          "warning"
+        );
+        appendLog(
+          "Dry run summary: total=" +
+            summary.totalFiles +
+            ", willMove=" +
+            summary.movedFiles +
+            ", willRename=" +
+            summary.renamedFiles +
+            ", willDeleteFolders=" +
+            summary.deletedFolders +
+            ".",
+          "warn"
+        );
+      } else {
+        setStatus(
+          "Done",
+          "Moved " +
+            summary.movedFiles +
+            " files, renamed " +
+            summary.renamedFiles +
+            ", deleted " +
+            summary.deletedFolders +
+            " folders.",
+          "running"
+        );
+        appendLog(
+          "Run complete: moved=" +
+            summary.movedFiles +
+            ", renamed=" +
+            summary.renamedFiles +
+            ", deletedFolders=" +
+            summary.deletedFolders +
+            ".",
+          "success"
+        );
+      }
+
+      isRunning = false;
+      return summary;
+    }
+
+    async function pickDirectory() {
+      if (!("showDirectoryPicker" in window)) {
+        appendLog(
+          "This browser does not support the File System Access API. Use a Chromium-based browser.",
+          "error"
+        );
+        setStatus(
+          "Unsupported",
+          "File System Access API is not available in this browser.",
+          "error"
+        );
+        return null;
+      }
+
+      try {
+        setStatus("Waiting", "Choose a folder to work with…", "warning");
+        appendLog("Waiting for folder selection…", "info");
+        const dir = await window.showDirectoryPicker({ mode: "readwrite" });
+        appendLog("Selected folder: " + dir.name, "success");
+        return dir;
+      } catch (err) {
+        appendLog("Folder selection cancelled or failed.", "warn");
+        setStatus("Cancelled", "No folder selected. Nothing changed.", "warning");
+        return null;
+      }
+    }
+
+    async function runFlatten({ dryRunFirst = false } = {}) {
+      if (isRunning) {
+        appendLog("A run is already in progress. Please wait.", "warn");
+        return;
+      }
+
+      const rootDir = await pickDirectory();
+      if (!rootDir) return;
+
+      const preview = previewModeEl.checked;
+
+      if (preview || dryRunFirst) {
+        const summary = await flatten(rootDir, { dryRun: true });
+
+        if (summary.totalFiles === 0) {
+          return;
+        }
+
+        if (!preview && dryRunFirst) {
+          return;
+        }
+
+        const message =
+          "Folder: " +
+          rootDir.name +
+          "\n\n" +
+          "Total files found: " +
+          summary.totalFiles +
+          "\n" +
+          "Will move:        " +
+          summary.movedFiles +
+          "\n" +
+          "Will rename:      " +
+          summary.renamedFiles +
+          "\n" +
+          "Will delete dirs: " +
+          summary.deletedFolders +
+          "\n\n" +
+          "Proceed with flattening?";
+
+        const ok = window.confirm(message);
+        if (!ok) {
+          appendLog("User cancelled after preview summary.", "warn");
+          setStatus(
+            "Preview cancelled",
+            "No files were moved because you cancelled.",
+            "warning"
+          );
+          setProgress(0, 1);
+          return;
+        }
+      }
+
+      await flatten(rootDir, { dryRun: false });
+    }
+
+    startBtn.addEventListener("click", () => runFlatten({ dryRunFirst: false }));
+    simulateBtn.addEventListener("click", () => runFlatten({ dryRunFirst: true }));
+
+    clearLogBtn.addEventListener("click", () => {
+      logEl.textContent = "";
+      appendLog("Log cleared.", "muted");
+    });
+
+    copyLogBtn.addEventListener("click", async () => {
+      const text = logEl.textContent || "";
+      try {
+        await navigator.clipboard.writeText(text);
+        appendLog("Log copied to clipboard.", "success");
+      } catch {
+        appendLog("Unable to copy log to clipboard.", "error");
+      }
+    });
+
+    setStatus("Idle", "Ready. Pick a folder to start.", "idle");
+    setProgress(0, 1);
+  </script>
+</body>
+</html>

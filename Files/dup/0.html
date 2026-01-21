@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GenAI+ Duplicate File Manager</title>
+
+  <!-- Favicon -->
+  <link
+    rel="icon"
+    href="https://raw.githubusercontent.com/Runarok/GenAI-plus/main/GenAI-plus.png"
+    type="image/png"
+  />
+
+  <style>
+    :root {
+      color-scheme: dark light;
+      --bg: #050816;
+      --bg-elevated: #0f172a;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.12);
+      --accent-danger: #ef4444;
+      --accent-danger-soft: rgba(239, 68, 68, 0.12);
+      --border-subtle: rgba(148, 163, 184, 0.45);
+      --text: #e5e7eb;
+      --text-soft: #9ca3af;
+      --radius-lg: 14px;
+      --radius-full: 999px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.65);
+      --shadow-soft-light: 0 18px 45px rgba(15, 23, 42, 0.18);
+      --outline: 0 0 0 2px rgba(34, 197, 94, 0.55);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(
+          circle at top left,
+          rgba(56, 189, 248, 0.18),
+          transparent 60%
+        ),
+        radial-gradient(
+          circle at bottom right,
+          rgba(34, 197, 94, 0.2),
+          transparent 55%
+        ),
+        var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 960px;
+      background: radial-gradient(
+            circle at top left,
+            rgba(59, 130, 246, 0.10),
+            transparent 55%
+          )
+          no-repeat,
+        radial-gradient(
+            circle at bottom right,
+            rgba(34, 197, 94, 0.08),
+            transparent 60%
+          )
+          no-repeat,
+        var(--bg-elevated);
+      border-radius: 24px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: var(--shadow-soft);
+      padding: 22px 22px 18px;
+      backdrop-filter: blur(18px);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: radial-gradient(
+        circle at 30% 20%,
+        rgba(248, 250, 252, 0.9),
+        rgba(56, 189, 248, 0.15)
+      );
+      border: 1px solid rgba(148, 163, 184, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 11px 25px rgba(15, 23, 42, 0.75);
+    }
+
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.15rem;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--text-soft);
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 0.82rem;
+      color: var(--text-soft);
+    }
+
+    .subtitle span {
+      color: var(--accent);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .pill {
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: var(--text-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.75);
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #22c55e, #4ade80);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+    }
+
+    .pill-danger {
+      border-color: rgba(248, 113, 113, 0.9);
+      color: #fecaca;
+    }
+
+    /* Main content layout */
+    .main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.9fr);
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 840px) {
+      .main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    /* Left: actions + list */
+    .panel {
+      background: rgba(15, 23, 42, 0.76);
+      border-radius: 18px;
+      padding: 14px 14px 10px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: var(--shadow-soft-light);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .panel-title {
+      font-size: 0.88rem;
+      font-weight: 500;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .panel-title small {
+      font-size: 0.72rem;
+      color: var(--text-soft);
+    }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--text-soft);
+    }
+
+    .file-input-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: radial-gradient(
+          circle at top left,
+          rgba(56, 189, 248, 0.18),
+          transparent 60%
+        ),
+        rgba(15, 23, 42, 0.96);
+      color: var(--text);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease,
+        border-color 0.08s ease, background 0.08s ease;
+    }
+
+    .file-input-label span.icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      font-size: 0.72rem;
+    }
+
+    .file-input-label:hover {
+      transform: translateY(-1px);
+      border-color: rgba(56, 189, 248, 0.9);
+      box-shadow: 0 11px 28px rgba(15, 23, 42, 0.75);
+      background: radial-gradient(
+          circle at top left,
+          rgba(56, 189, 248, 0.33),
+          transparent 60%
+        ),
+        rgba(15, 23, 42, 0.98);
+    }
+
+    .file-input-label:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 0.75rem;
+    }
+
+    .stat-pill {
+      padding: 4px 9px;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-soft);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .stat-pill strong {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .stat-pill.duplicates strong {
+      color: var(--accent-danger);
+    }
+
+    .search-box {
+      margin-bottom: 10px;
+    }
+
+    .search-box input {
+      width: 100%;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-subtle);
+      padding: 7px 11px;
+      font-size: 0.78rem;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.12s ease, box-shadow 0.12s ease,
+        background 0.12s ease;
+    }
+
+    .search-box input::placeholder {
+      color: rgba(148, 163, 184, 0.9);
+    }
+
+    .search-box input:focus-visible {
+      border-color: rgba(34, 197, 94, 0.9);
+      box-shadow: var(--outline);
+      background: rgba(15, 23, 42, 0.98);
+    }
+
+    .file-list {
+      max-height: 320px;
+      overflow: auto;
+      padding: 6px 3px 6px 0;
+      margin: 0;
+      list-style: none;
+      border-radius: 12px;
+      background: radial-gradient(
+          circle at top left,
+          rgba(30, 64, 175, 0.3),
+          transparent 70%
+        ),
+        rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(30, 64, 175, 0.5);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(148, 163, 184, 0.85) transparent;
+      font-size: 0.78rem;
+    }
+
+    .file-list::-webkit-scrollbar {
+      width: 7px;
+    }
+
+    .file-list::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.85);
+      border-radius: 999px;
+    }
+
+    .file-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .group-header {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: linear-gradient(
+        180deg,
+        rgba(15, 23, 42, 1) 40%,
+        rgba(15, 23, 42, 0.85) 100%
+      );
+      padding: 4px 9px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.9);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .group-title {
+      font-size: 0.75rem;
+      color: var(--text-soft);
+    }
+
+    .group-title strong {
+      color: #e5e7eb;
+    }
+
+    .group-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 0.7rem;
+    }
+
+    .group-actions button {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.75);
+      padding: 3px 7px;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-soft);
+      cursor: pointer;
+      font-size: 0.7rem;
+    }
+
+    .group-actions button:hover {
+      border-color: rgba(96, 165, 250, 0.95);
+      color: #e5e7eb;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 9px;
+      border-bottom: 1px solid rgba(30, 64, 175, 0.2);
+      background: transparent;
+    }
+
+    .file-item:last-child {
+      border-bottom: none;
+    }
+
+    .file-item.duplicate {
+      background: linear-gradient(
+        90deg,
+        rgba(239, 68, 68, 0.12),
+        transparent 70%
+      );
+    }
+
+    .file-item-base {
+      background: linear-gradient(
+        90deg,
+        rgba(34, 197, 94, 0.12),
+        transparent 68%
+      );
+    }
+
+    .file-meta {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .file-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-path {
+      font-size: 0.7rem;
+      color: var(--text-soft);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-size {
+      font-size: 0.7rem;
+      color: var(--text-soft);
+    }
+
+    .file-role-tag {
+      font-size: 0.68rem;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(34, 197, 94, 0.85);
+      color: #bbf7d0;
+      background: var(--accent-soft);
+      margin-left: auto;
+    }
+
+    .file-role-tag.dup {
+      border-color: rgba(239, 68, 68, 0.9);
+      color: #fecaca;
+      background: var(--accent-danger-soft);
+    }
+
+    .checkbox {
+      width: 15px;
+      height: 15px;
+      border-radius: 4px;
+      border: 1px solid rgba(148, 163, 184, 0.9);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.95);
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .checkbox input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .checkbox span {
+      width: 9px;
+      height: 9px;
+      border-radius: 2px;
+      background: transparent;
+      transition: background 0.11s ease, transform 0.11s ease;
+      transform: scale(0.7);
+    }
+
+    .checkbox input:checked + span {
+      background: linear-gradient(135deg, #22c55e, #4ade80);
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.7);
+      transform: scale(1);
+    }
+
+    /* Right side: actions/results */
+    .side-panel {
+      background: radial-gradient(
+          circle at top left,
+          rgba(56, 189, 248, 0.22),
+          transparent 60%
+        ),
+        rgba(15, 23, 42, 0.92);
+      border-radius: 18px;
+      padding: 14px 14px 10px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      box-shadow: var(--shadow-soft-light);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .side-section-title {
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .side-section-title small {
+      font-size: 0.7rem;
+      color: var(--text-soft);
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 0.7rem;
+    }
+
+    .chip {
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-soft);
+    }
+
+    .chip-accent {
+      border-color: rgba(34, 197, 94, 0.9);
+      color: #bbf7d0;
+      background: var(--accent-soft);
+    }
+
+    .chip-danger {
+      border-color: rgba(239, 68, 68, 0.9);
+      color: #fecaca;
+      background: var(--accent-danger-soft);
+    }
+
+    .side-actions {
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.78rem;
+    }
+
+    .primary-btn,
+    .ghost-btn {
+      border-radius: var(--radius-full);
+      padding: 7px 11px;
+      font-size: 0.8rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.08s ease, box-shadow 0.08s ease,
+        border-color 0.08s ease, background 0.08s ease, color 0.08s ease;
+      white-space: nowrap;
+    }
+
+    .primary-btn {
+      background: linear-gradient(
+        135deg,
+        #22c55e,
+        #4ade80,
+        #22c55e
+      );
+      color: #022c22;
+      font-weight: 500;
+      box-shadow: 0 12px 28px rgba(22, 163, 74, 0.55);
+      border-color: rgba(34, 197, 94, 1);
+    }
+
+    .primary-btn:disabled {
+      opacity: 0.5;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .primary-btn:not(:disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 38px rgba(22, 163, 74, 0.75);
+    }
+
+    .primary-btn:not(:disabled):active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .ghost-btn {
+      background: rgba(15, 23, 42, 0.96);
+      color: var(--text-soft);
+      border-color: rgba(148, 163, 184, 0.7);
+    }
+
+    .ghost-btn:hover {
+      border-color: rgba(96, 165, 250, 0.95);
+      color: #e5e7eb;
+      background: rgba(15, 23, 42, 1);
+      box-shadow: 0 11px 22px rgba(15, 23, 42, 0.8);
+      transform: translateY(-1px);
+    }
+
+    .side-note {
+      font-size: 0.72rem;
+      color: var(--text-soft);
+    }
+
+    .log {
+      margin-top: 4px;
+      padding: 6px 8px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px dashed rgba(148, 163, 184, 0.5);
+      min-height: 50px;
+      max-height: 130px;
+      overflow: auto;
+      font-size: 0.72rem;
+      color: #e5e7eb;
+      white-space: pre-wrap;
+    }
+
+    .log::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .log::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.9);
+      border-radius: 999px;
+    }
+
+    .log-line-muted {
+      color: var(--text-soft);
+    }
+
+    .pill-small {
+      font-size: 0.68rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      color: var(--text-soft);
+      background: rgba(15, 23, 42, 0.95);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <div class="title-wrap">
+          <div class="logo">
+            <!-- Optional: inline logo, falls back to favicon if blocked -->
+            <img
+              src="https://raw.githubusercontent.com/Runarok/GenAI-plus/main/GenAI-plus.png"
+              alt="GenAI+"
+            />
+          </div>
+          <div>
+            <h1>
+              GenAI+ Duplicate File Manager
+              <span class="badge">QoL / QoS</span>
+            </h1>
+            <p class="subtitle">
+              Clean up smarter: detect, review, and curate <span>duplicate files</span> before deleting.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="pill">
+          <span class="pill-dot"></span>
+          Content-based hash (SHA‑256)
+        </div>
+        <div class="pill pill-danger">
+          Auto delete never; you stay in control
+        </div>
+      </div>
+    </header>
+
+    <div class="main">
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            Files & Duplicates
+            <small id="summaryLabel">No files loaded</small>
+          </div>
+          <label for="fileInput" class="file-input-label">
+            <span class="icon">+</span>
+            <span>Choose folder / files</span>
+          </label>
+          <input
+            type="file"
+            id="fileInput"
+            multiple
+            webkitdirectory
+          />
+        </div>
+
+        <div class="hint">
+          Tip: Point to a root folder and this will scan all nested files by content, not just names.
+        </div>
+
+        <div class="stats">
+          <div class="stat-pill">
+            Total files: <strong id="statTotal">0</strong>
+          </div>
+          <div class="stat-pill duplicates">
+            Duplicate groups: <strong id="statGroups">0</strong>
+          </div>
+          <div class="stat-pill duplicates">
+            Duplicate files: <strong id="statDups">0</strong>
+          </div>
+          <div class="stat-pill">
+            Selected for delete: <strong id="statSelected">0</strong>
+          </div>
+        </div>
+
+        <div class="search-box">
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Filter by name or path (live search)…"
+          />
+        </div>
+
+        <ul id="fileList" class="file-list">
+          <!-- Groups & files are rendered here -->
+        </ul>
+      </section>
+
+      <aside class="side-panel">
+        <div class="side-section-title">
+          Decisions & Actions
+          <small>Curate duplicates before removal</small>
+        </div>
+
+        <div class="chip-row">
+          <span class="chip chip-accent">Base copy stays by default</span>
+          <span class="chip chip-danger">You choose what to delete</span>
+          <span class="chip">No disk changes; just a plan</span>
+        </div>
+
+        <div class="side-actions">
+          <button id="btnSelectAllDups" class="ghost-btn" disabled>
+            Select all duplicates (keep 1 per group)
+          </button>
+
+          <button id="btnClearSelection" class="ghost-btn" disabled>
+            Clear selection
+          </button>
+
+          <button id="btnDelete" class="primary-btn" disabled>
+            Plan delete for selected duplicates
+          </button>
+        </div>
+
+        <p class="side-note">
+          Browsers cannot actually remove files from your disk directly for security reasons.  
+          This tool prepares a deletion list you can use in your OS or scripts.
+        </p>
+
+        <div>
+          <span class="side-section-title">
+            Planned deletions
+            <small class="pill-small">Preview only</small>
+          </span>
+          <div id="log" class="log">
+            <span class="log-line-muted">
+              No files selected yet. Pick duplicates on the left and press “Plan delete”.
+            </span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById("fileInput");
+    const fileListEl = document.getElementById("fileList");
+    const searchInput = document.getElementById("searchInput");
+
+    const statTotal = document.getElementById("statTotal");
+    const statGroups = document.getElementById("statGroups");
+    const statDups = document.getElementById("statDups");
+    const statSelected = document.getElementById("statSelected");
+    const summaryLabel = document.getElementById("summaryLabel");
+
+    const btnSelectAllDups = document.getElementById("btnSelectAllDups");
+    const btnClearSelection = document.getElementById("btnClearSelection");
+    const btnDelete = document.getElementById("btnDelete");
+    const logEl = document.getElementById("log");
+
+    let allFiles = [];
+    let groupsByHash = new Map(); // hash -> {hash, files: [{file, path, size}], id}
+    let selection = new Set(); // key = hash + '|' + path
+    let groupOrder = [];
+
+    async function hashFile(file) {
+      const buffer = await file.arrayBuffer();
+      const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    function formatSize(bytes) {
+      if (!Number.isFinite(bytes)) return "-";
+      const units = ["B", "KB", "MB", "GB", "TB"];
+      let i = 0;
+      let val = bytes;
+      while (val >= 1024 && i < units.length - 1) {
+        val /= 1024;
+        i++;
+      }
+      return `${val.toFixed(val >= 10 || i === 0 ? 0 : 1)} ${units[i]}`;
+    }
+
+    function keyFor(hash, path) {
+      return `${hash}|${path}`;
+    }
+
+    function getDisplayPath(f) {
+      return f.webkitRelativePath || f.name;
+    }
+
+    function rebuildStats() {
+      const total = allFiles.length;
+      const groups = groupOrder.filter(
+        (hash) => (groupsByHash.get(hash)?.files.length || 0) > 1
+      ).length;
+
+      let dupCount = 0;
+      groupsByHash.forEach((group) => {
+        if (group.files.length > 1) {
+          dupCount += group.files.length - 1; // everything except base
+        }
+      });
+
+      statTotal.textContent = total;
+      statGroups.textContent = groups;
+      statDups.textContent = dupCount;
+      statSelected.textContent = selection.size;
+
+      if (!total) {
+        summaryLabel.textContent = "No files loaded";
+      } else if (!groups) {
+        summaryLabel.textContent = "No duplicates found";
+      } else {
+        summaryLabel.textContent = `${groups} groups, ${dupCount} duplicates`;
+      }
+
+      const hasGroups = groups > 0;
+      btnSelectAllDups.disabled = !hasGroups;
+      btnClearSelection.disabled = selection.size === 0;
+      btnDelete.disabled = selection.size === 0;
+    }
+
+    function renderList() {
+      const filter = searchInput.value.trim().toLowerCase();
+      fileListEl.innerHTML = "";
+
+      if (!groupOrder.length) {
+        const li = document.createElement("li");
+        li.style.padding = "10px 12px";
+        li.style.fontSize = "0.78rem";
+        li.style.color = "var(--text-soft)";
+        li.textContent = "No files yet. Use “Choose folder / files” to start scanning.";
+        fileListEl.appendChild(li);
+        return;
+      }
+
+      groupOrder.forEach((hash) => {
+        const group = groupsByHash.get(hash);
+        if (!group || !group.files.length) return;
+
+        // Apply filter: skip entire group if nothing matches
+        if (filter) {
+          const anyMatch = group.files.some((entry) => {
+            const p = entry.path.toLowerCase();
+            return p.includes(filter);
+          });
+          if (!anyMatch) return;
+        }
+
+        if (group.files.length === 1) {
+          // unique file group
+          const entry = group.files[0];
+          const li = renderFileItem({
+            entry,
+            hash,
+            isBase: true,
+            isDuplicate: false,
+          });
+          fileListEl.appendChild(li);
+          return;
+        }
+
+        // duplicate group
+        const header = document.createElement("li");
+        header.className = "group-header";
+
+        const title = document.createElement("div");
+        title.className = "group-title";
+        const totalSize = group.files.reduce((sum, f) => sum + f.size, 0);
+        title.innerHTML =
+          `Group <strong>${group.files.length}</strong> files · ` +
+          `${formatSize(totalSize)} total · content match`;
+
+        const actions = document.createElement("div");
+        actions.className = "group-actions";
+
+        const keepOldest = document.createElement("button");
+        keepOldest.type = "button";
+        keepOldest.textContent = "Keep oldest";
+        keepOldest.addEventListener("click", () => {
+          handleGroupSelectStrategy(group, "oldest");
+        });
+
+        const keepNewest = document.createElement("button");
+        keepNewest.type = "button";
+        keepNewest.textContent = "Keep newest";
+        keepNewest.addEventListener("click", () => {
+          handleGroupSelectStrategy(group, "newest");
+        });
+
+        const clearGroup = document.createElement("button");
+        clearGroup.type = "button";
+        clearGroup.textContent = "Clear group";
+        clearGroup.addEventListener("click", () => {
+          group.files.forEach((entry) => {
+            selection.delete(keyFor(hash, entry.path));
+          });
+          rebuildStats();
+          renderList();
+        });
+
+        actions.appendChild(keepOldest);
+        actions.appendChild(keepNewest);
+        actions.appendChild(clearGroup);
+
+        header.appendChild(title);
+        header.appendChild(actions);
+        fileListEl.appendChild(header);
+
+        // Sort by path for stable, friendly view
+        const filesSorted = [...group.files].sort((a, b) =>
+          a.path.localeCompare(b.path)
+        );
+
+        filesSorted.forEach((entry, index) => {
+          const isBase = index === 0;
+          const li = renderFileItem({
+            entry,
+            hash,
+            isBase,
+            isDuplicate: !isBase,
+          });
+          fileListEl.appendChild(li);
+        });
+      });
+    }
+
+    function renderFileItem({ entry, hash, isBase, isDuplicate }) {
+      const li = document.createElement("li");
+      li.classList.add("file-item");
+      if (isDuplicate) li.classList.add("duplicate");
+      if (isBase && !isDuplicate) li.classList.add("file-item-base");
+
+      const label = document.createElement("label");
+      label.className = "checkbox";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      const key = keyFor(hash, entry.path);
+      checkbox.checked = selection.has(key);
+
+      const checkVisual = document.createElement("span");
+      label.appendChild(checkbox);
+      label.appendChild(checkVisual);
+      li.appendChild(label);
+
+      const meta = document.createElement("div");
+      meta.className = "file-meta";
+
+      const name = document.createElement("div");
+      name.className = "file-name";
+      name.textContent = entry.file.name;
+
+      const path = document.createElement("div");
+      path.className = "file-path";
+      path.textContent = entry.path;
+
+      meta.appendChild(name);
+      meta.appendChild(path);
+      li.appendChild(meta);
+
+      const size = document.createElement("div");
+      size.className = "file-size";
+      size.textContent = formatSize(entry.size);
+      li.appendChild(size);
+
+      if (isBase || isDuplicate) {
+        const tag = document.createElement("span");
+        tag.className = "file-role-tag";
+        if (isDuplicate) {
+          tag.classList.add("dup");
+          tag.textContent = "duplicate";
+        } else {
+          tag.textContent = "base copy";
+        }
+        li.appendChild(tag);
+      }
+
+      checkbox.addEventListener("change", () => {
+        if (checkbox.checked) {
+          selection.add(key);
+        } else {
+          selection.delete(key);
+        }
+        rebuildStats();
+      });
+
+      return li;
+    }
+
+    function handleGroupSelectStrategy(group, strategy) {
+      if (!group.files.length) return;
+      const sorted = [...group.files].sort((a, b) => {
+        const at = a.file.lastModified || 0;
+        const bt = b.file.lastModified || 0;
+        return at - bt;
+      });
+      let keep;
+      if (strategy === "oldest") {
+        keep = sorted[0];
+      } else if (strategy === "newest") {
+        keep = sorted[sorted.length - 1];
+      } else {
+        keep = group.files[0];
+      }
+
+      // clear current selection for this group
+      group.files.forEach((entry) => {
+        selection.delete(keyFor(group.hash, entry.path));
+      });
+
+      // select everything except keep
+      group.files.forEach((entry) => {
+        if (entry !== keep) {
+          selection.add(keyFor(group.hash, entry.path));
+        }
+      });
+
+      rebuildStats();
+      renderList();
+    }
+
+    async function handleFilesSelected(files) {
+      allFiles = [];
+      groupsByHash.clear();
+      groupOrder = [];
+      selection.clear();
+      rebuildStats();
+      renderList();
+      logEl.textContent = "Scanning files and computing hashes…";
+
+      // Build simple array first
+      const inputFiles = Array.from(files);
+
+      let index = 0;
+      for (const file of inputFiles) {
+        index++;
+        const path = getDisplayPath(file);
+        const size = file.size;
+        const hash = await hashFile(file);
+
+        allFiles.push(file);
+
+        let group = groupsByHash.get(hash);
+        if (!group) {
+          group = { hash, files: [], id: groupOrder.length + 1 };
+          groupsByHash.set(hash, group);
+          groupOrder.push(hash);
+        }
+
+        group.files.push({ file, path, size });
+
+        if (index % 10 === 0 || index === inputFiles.length) {
+          summaryLabel.textContent = `Hashed ${index}/${inputFiles.length} files…`;
+        }
+      }
+
+      rebuildStats();
+      renderList();
+
+      if (!allFiles.length) {
+        logEl.textContent = "No files loaded.";
+      } else {
+        const groups = groupOrder.filter(
+          (hash) => (groupsByHash.get(hash)?.files.length || 0) > 1
+        ).length;
+
+        if (!groups) {
+          logEl.textContent =
+            "Scan complete.\nNo duplicate content groups detected.";
+        } else {
+          logEl.textContent =
+            `Scan complete.\n` +
+            `${groups} duplicate groups found.\n` +
+            `Use group actions or checkboxes to pick which copies to delete.`;
+        }
+      }
+    }
+
+    function recomputeSelectionCountFromDOM() {
+      selection.clear();
+      const checkboxes = fileListEl.querySelectorAll("input[type='checkbox']");
+      checkboxes.forEach((checkbox) => {
+        if (!checkbox.checked) return;
+        const li = checkbox.closest(".file-item");
+        if (!li) return;
+        const path = li.querySelector(".file-path")?.textContent || "";
+        const name = li.querySelector(".file-name")?.textContent || "";
+        let hash = "";
+        groupsByHash.forEach((group) => {
+          const found = group.files.find(
+            (entry) => entry.path === path && entry.file.name === name
+          );
+          if (found) {
+            hash = group.hash;
+          }
+        });
+        if (!hash) return;
+        const k = keyFor(hash, path);
+        selection.add(k);
+      });
+      rebuildStats();
+    }
+
+    fileInput.addEventListener("change", (e) => {
+      const files = e.target.files;
+      if (!files || !files.length) return;
+      handleFilesSelected(files).catch((err) => {
+        console.error(err);
+        logEl.textContent =
+          "An error occurred while reading files. Try again with fewer files.";
+      });
+    });
+
+    searchInput.addEventListener("input", () => {
+      renderList();
+    });
+
+    btnSelectAllDups.addEventListener("click", () => {
+      // For each duplicate group, keep first file only; select rest
+      groupOrder.forEach((hash) => {
+        const group = groupsByHash.get(hash);
+        if (!group || group.files.length <= 1) return;
+        // Use first as base by default
+        group.files.forEach((entry, index) => {
+          const k = keyFor(hash, entry.path);
+          if (index === 0) {
+            selection.delete(k);
+          } else {
+            selection.add(k);
+          }
+        });
+      });
+      rebuildStats();
+      renderList();
+    });
+
+    btnClearSelection.addEventListener("click", () => {
+      selection.clear();
+      rebuildStats();
+      renderList();
+    });
+
+    btnDelete.addEventListener("click", () => {
+      recomputeSelectionCountFromDOM();
+      if (!selection.size) {
+        logEl.textContent =
+          "Nothing selected.\nCheck duplicates on the left first.";
+        return;
+      }
+
+      const lines = [];
+      lines.push(
+        `Planned delete for ${selection.size} file(s):`,
+        "---------------------------------------"
+      );
+
+      selection.forEach((k) => {
+        const [hash, path] = k.split("|");
+        const group = groupsByHash.get(hash);
+        if (!group) return;
+        const found = group.files.find((e) => e.path === path);
+        if (!found) return;
+        lines.push(`${path}  (${formatSize(found.size)})`);
+      });
+
+      lines.push(
+        "",
+        "This is a preview only. Use these paths in your file explorer or scripts to delete safely."
+      );
+
+      logEl.textContent = lines.join("\n");
+    });
+  </script>
+</body>
+</html>
